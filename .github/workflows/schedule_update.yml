@@ -1,0 +1,15 @@
+name : "Schedule Update"
+
+on:
+   schedule:
+     - cron: "15 4,5 * * *"
+
+jobs:
+  update:
+    name: "Update"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - run: rustup update stable && rustup default stable
+      - run: cargo update --verbose
