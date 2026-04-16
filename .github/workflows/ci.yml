@@ -20,5 +20,3 @@ jobs:
         run: make init
       - name: Compilation
         run: make build
-      - name: Lancement
-        run: make run
