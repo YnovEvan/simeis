@@ -1,0 +1,55 @@
+name: "Ticket générique"
+about: "Modèle de ticket pour suivre une tâche du site web"
+title: "TITRE_TICKET"
+labels:
+  - To Complete
+  - WEB
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Penser à lier le ticket au projet
+
+  - type: input
+    id: branche
+    attributes:
+      label: "Branche liée"
+      placeholder: "Ex: feat/#18-ajout_login"
+      value: |
+        Branche: feat/#XX-À_REMPLACER
+      validations:
+        required: true
+
+  - type: textarea
+    id: desc
+    attributes:
+      label: "Description du ticket"
+      description: "Explique les étapes, ou les objectifs"
+      value: |
+        **En tant que** _
+        **je veux** _ 
+        **afin que** _
+    validations:
+      required: true
+
+  - type: textarea
+    id: desc_technical
+    attributes:
+      label: "Description fonctionnelle"
+      description: "Expliquations technique"
+      placeholder: "..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: todo
+    attributes:
+      label: "Tâches à effectuer"
+      description: "Utilise le format Markdown pour cocher les tâches une fois faites."
+      value: |
+        - [ ] : …
+        - [ ] : …
+        - [ ] : …
+    validations:
+      required: true

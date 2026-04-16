@@ -1,0 +1,41 @@
+name: "Reporter un bug"
+about: "Modèle de ticket pour reporter un bug du front"
+title: "BUG_TITRE_TICKET"
+labels:
+  - To Complete
+  - WEB
+  - bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Penser à attribuer une priorité après avoir créé le ticket et à lier le ticket au projet
+
+  - type: input
+    id: branche
+    attributes:
+      label: "Branche liée"
+      placeholder: "Ex: bug/#18-patch_login"
+      value: |
+        Branche: bug/#XX-A_REMPLACER
+      validations:
+        required: true
+
+  - type: textarea
+    id: desc
+    attributes:
+      label: "Description du bug"
+      description: "Explique le bug ainsi que les étapes pour reproduire le bug"
+      placeholder: "..."
+      validations:
+        required: true
+
+  - type: textarea
+    id: ideas
+    attributes:
+      label: "Idées pour résoudre"
+      description: "Idées de résolution"
+      placeholder: "..."
+      validations:
+        required: false
