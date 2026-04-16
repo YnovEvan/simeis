@@ -1,5 +1,8 @@
 name: "CI"
 
+env:
+  CARGO_TERM_COLOR: always
+
 on:
   push:
     branches: [main]
@@ -11,7 +14,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v6
-        - run: rustup update stable && rustup default stable
-        - run: cargo build --verbose
+      - name: Récupération du code
+        uses: actions/checkout@v6
+      - name: Installation de rust
+        run: make init
+      - name: Compilation
+        run: make build
