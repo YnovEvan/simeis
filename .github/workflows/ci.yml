@@ -20,3 +20,7 @@ jobs:
         run: make init
       - name: Compilation
         run: make build
+      - name: Vérification modification rustc
+        run: |
+          rustc --print code-models
+          rustc --print codegen-units
