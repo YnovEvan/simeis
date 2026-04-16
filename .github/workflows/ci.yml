@@ -17,8 +17,8 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
       - name: Installation de rust
-        uses: make init
+        run: make init
       - name: Compilation
-        uses: make build
+        run: make build
       - name: Lancement
-        uses: make run
+        run: make run
