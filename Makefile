@@ -19,9 +19,7 @@ init:
 ## build: Compile le binaire pour l'OS actuel
 build: init
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
-	rustc -C code-model=kernel
-	rustc -C codegen-units=1
-	cargo build --verbose
+	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## start: Compile et lance l'application
 start: build
