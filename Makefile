@@ -6,7 +6,7 @@ BINARY_NAME=Semeis
 HELP_COLOR=\033[36m
 RESET=\033[0m
 RUSTFLAGS={
-	code-model=kernel,
+	code-model="kernel",
 	codegen-units=1,
 }
 
