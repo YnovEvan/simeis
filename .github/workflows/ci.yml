@@ -16,11 +16,9 @@ jobs:
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
+
       - name: Installation de rust
         run: make init
-      - name: Compilation
+
+      - name: Vérification de compilation
         run: make build
-      - name: Vérification modification rustc
-        run: |
-          rustc --print code-models
-          rustc --print codegen-units

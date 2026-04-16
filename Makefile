@@ -1,7 +1,3 @@
-# --- Variables ---
-TERN_CONF = migrations/tern.conf
-BINARY_NAME=Semeis
-
 # --- Couleurs pour l'affichage ---
 HELP_COLOR=\033[36m
 RESET=\033[0m
@@ -29,4 +25,4 @@ start: build
 ## start: Lance l'application simplement
 run: 
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
-	cargo run 
+	cargo run
