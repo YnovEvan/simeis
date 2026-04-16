@@ -1,9 +1,7 @@
-name: "Ticket générique"
-about: "Modèle de ticket pour suivre une tâche du site web"
+name: Ticket générique
+about: "Modèle de ticket pour suivre une tâche"
 title: "TITRE_TICKET"
-labels:
-  - To Complete
-  - WEB
+labels: [To Complete, WEB]
 
 body:
   - type: markdown
