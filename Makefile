@@ -5,6 +5,10 @@ BINARY_NAME=Semeis
 # --- Couleurs pour l'affichage ---
 HELP_COLOR=\033[36m
 RESET=\033[0m
+RUSTFLAGS={
+	code-model=kernel
+	codegen-units=1
+}
 
 ## help: Affiche cette aide
 help:
