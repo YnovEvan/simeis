@@ -13,4 +13,5 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v6
-        
+        - run: rustup update stable && rustup default stable
+        - run: cargo build --verbose
