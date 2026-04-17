@@ -1,9 +1,8 @@
 name: Ci Release
 
 on:
-    push:
-        tags: ["*"]
-
+    release:
+                
 jobs:
     quality:
         name: Quality
