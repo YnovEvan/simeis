@@ -1,0 +1,42 @@
+name: Ci Release
+
+on:
+    push:
+        tags: ["*"]
+
+jobs:
+    quality:
+        name: Quality
+        runs-on: ubuntu-latest
+        steps:
+            - name: Récupération du code
+              uses: actions/checkout@v6
+
+            - name: Installation de rust
+              run: make init
+
+            - name: Formatage
+              run: make fmt
+
+            - name: Linting
+              run: make lint
+
+    build:
+        name: Build
+        needs: quality
+        runs-on: ubuntu-latest
+        steps:
+            - name: Récupération du code
+              uses: actions/checkout@v6
+
+            - name: Installation de rust
+              run: make init
+
+            - name: Compilation
+              run: make build-release
+
+            - name: Optimisation executable
+              run: |
+                  ls -lah ./target/release/
+                  strip ./target/release/simeis-server
+                  ls -lah ./target/release/
