@@ -26,13 +26,3 @@ start: build
 run: 
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
-
-## opti: Optimisation du .exe (default)
-opti-default:
-	@echo "${HELP_COLOR}==> Optimisation de l'application...${RESET}"
-	strip -s ./target/debug/simeis-server.exe 
-
-## opti: Optimisation du .exe (release)
-opti-release:
-	@echo "${HELP_COLOR}==> Optimisation de l'application...${RESET}"
-	strip -s ./target/release/simeis-server.exe 

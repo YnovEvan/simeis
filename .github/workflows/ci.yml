@@ -24,10 +24,7 @@ jobs:
         run: make build
 
       - name: Vérification taille .exe
-        run: ls -lah ./target/debug/
-
-      - name: Optimisation de l'executable
-        run: make opti-default
-
-      - name: Vérification taille .exe
-        run: ls -lah ./target/debug/
+        run: | # Penser à changer le fichier /debug/ si build avec --release
+          ls -lah ./target/debug/
+          strip ./target/debug/simeis-server
+          ls -lah ./target/debug/
