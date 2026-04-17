@@ -1,1 +1,3 @@
-🔀 PR #${PullRequestIndex} — ${HeadBranch}
+# Type de changement
+
+- 🔀 PR #${PullRequestIndex} — ${HeadBranch}
