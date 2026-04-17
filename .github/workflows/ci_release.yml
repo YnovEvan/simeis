@@ -3,6 +3,7 @@ name: Ci Release
 on:
     push:
         tags: ["*"]
+        branches-ignore: ["*"]
 
 jobs:
     quality:
