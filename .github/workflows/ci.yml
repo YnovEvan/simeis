@@ -24,12 +24,12 @@ jobs:
         run: make build
 
       - name: Vérification taille .exe
-        run: cd ./target/debug
+        run: cd ./target/debug \
           ls -lah
 
       - name: Optimisation de l'executable
         run: make opti-default
 
       - name: Vérification taille .exe
-        run: cd ./target/debug
+        run: cd ./target/debug \
           ls -lah
