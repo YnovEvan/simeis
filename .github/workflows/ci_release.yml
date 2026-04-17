@@ -1,8 +1,10 @@
 name: Ci Release
 
 on:
-    release:
-                
+    push:
+        tags:
+            - "*.*.*"
+
 jobs:
     quality:
         name: Quality

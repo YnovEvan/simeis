@@ -6,12 +6,9 @@ env:
 on:
   push:
     branches:
-      - "*"
-    tags-ignore:
-      - "*"
-
-  pull_request:
-    branches: [main]
+      - "main"
+      - "feat/*"
+      - "fix/*"
 
 jobs:
   quality:
