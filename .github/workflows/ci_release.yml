@@ -3,7 +3,7 @@ name: Ci Release
 on:
     push:
         tags:
-            - "*"
+            - "*.*.*"
 
 jobs:
     quality:
