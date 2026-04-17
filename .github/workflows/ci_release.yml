@@ -23,7 +23,6 @@ jobs:
     
     tests:
         name: Tests
-        needs: quality
         runs-on: ubuntu-latest
         steps:
             - name: Récupération du code
