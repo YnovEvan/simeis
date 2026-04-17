@@ -20,11 +20,14 @@ jobs:
       - name: Installation de rust
         run: make init
 
-      - name: Vérification de compilation
+      - name: Compilation du projet
         run: make build
 
-      - name: Vérification taille .exe
+      - name: Optimisation executable
         run: | # Penser à changer le fichier /debug/ si build avec --release
           ls -lah ./target/debug/
           strip ./target/debug/simeis-server
           ls -lah ./target/debug/
+
+      - name: Mise à jour de la doc
+        run: typst compile ./doc/manual.typ ./doc.pdf
