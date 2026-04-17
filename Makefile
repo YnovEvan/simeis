@@ -28,6 +28,16 @@ build-release: init
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
 
+# test: Compile et lance les tests
+test: build
+	@echo "${HELP_COLOR}==> Lancement des tests...${RESET}"
+	cargo test --verbose
+
+# test-release: Compile et lance les tests en mode release
+test-release: build-release
+	@echo "${HELP_COLOR}==> Lancement des tests en mode release...${RESET}"
+	cargo test --release --verbose
+
 # lint: Lint le code avec clippy et traite les warnings comme des erreurs
 lint:
 	@echo "${HELP_COLOR}==> Linting du code...${RESET}"
