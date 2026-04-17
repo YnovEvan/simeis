@@ -11,7 +11,8 @@ help:
 init: 
 	@echo "${HELP_COLOR}==> Installation de rust en cours...${RESET}"
 	rustup update stable && rustup default stable
-
+	cargo install --locked typst-cli
+	
 ## build: Compile le binaire pour l'OS actuel
 build: init
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
@@ -26,3 +27,8 @@ start: build
 run: 
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
+
+## docu: Création de la documentation (en cas d'erreur : make init)
+docu:
+	@echo "${HELP_COLOR}==> Generation de la documentation...${RESET}"
+	typst compile ./doc/manual.typ ./doc/manuel.pdf

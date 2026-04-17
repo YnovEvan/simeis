@@ -1,11 +1,12 @@
-name: "CI"
+name: "CI - Main"
 
 env:
   CARGO_TERM_COLOR: always
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "*"
   pull_request:
     branches: [main]
 
@@ -23,7 +24,6 @@ jobs:
       - name: Compilation du projet
         run: make build
 
-      - name: Mise à jour de la doc
+      - name: Création de la documentation typst
         run: |
-          cargo install --locked typst-cli
-          typst compile ./doc/manual.typ ./doc/manuel.pdf
+          make docu
