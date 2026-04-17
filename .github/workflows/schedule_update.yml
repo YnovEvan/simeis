@@ -1,0 +1,17 @@
+name : "Schedule Update"
+
+on:
+   schedule:
+     - cron: "0 * * * *"
+
+jobs:
+  update:
+    name: "Update"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Update Rust
+        run: rustup update stable && rustup default stable
+      - name: Update dependencies
+        run: cargo update --verbose

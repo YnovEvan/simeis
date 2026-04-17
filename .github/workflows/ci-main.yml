@@ -11,6 +11,35 @@ on:
     branches: [main]
 
 jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de rust
+        run: make init
+
+      - name: Formatage
+        run: make fmt
+
+      - name: Linting
+        run: make lint
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de rust
+        run: make init
+
+      - name: Lancement des tests
+        run: make test
+
   build:
     name: Build
     runs-on: ubuntu-latest
