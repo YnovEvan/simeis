@@ -1,7 +1,3 @@
-# --- Variables ---
-TERN_CONF = migrations/tern.conf
-BINARY_NAME=Semeis
-
 # --- Couleurs pour l'affichage ---
 HELP_COLOR=\033[36m
 RESET=\033[0m
@@ -15,13 +11,14 @@ help:
 init: 
 	@echo "${HELP_COLOR}==> Installation de rust en cours...${RESET}"
 	rustup update stable && rustup default stable
+	cargo install --locked typst-cli
 	rustup component add rustfmt
 	rustup component add clippy
 
 ## build: Compile le binaire pour l'OS actuel
 build: init
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
-	cargo build --verbose
+	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## build-release: Compile le binaire en mode release
 build-release: init
@@ -56,4 +53,9 @@ start: build
 ## start: Lance l'application simplement
 run: 
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
-	cargo run 
+	cargo run
+
+## docu: Création de la documentation (en cas d'erreur : make init)
+docu:
+	@echo "${HELP_COLOR}==> Generation de la documentation...${RESET}"
+	typst compile ./doc/manual.typ ./doc/manuel.pdf
