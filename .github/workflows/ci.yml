@@ -30,4 +30,6 @@ jobs:
           ls -lah ./target/debug/
 
       - name: Mise à jour de la doc
-        run: typst compile ./doc/manual.typ ./doc.pdf
+        run: |
+          cargo install --locked typst-cli
+          typst compile ./doc/manual.typ ./doc/manuel.pdf
