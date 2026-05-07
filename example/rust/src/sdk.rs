@@ -22,7 +22,6 @@ pub fn tx_buy(tx: &Value) -> (f64, f64) {
 // From the market transaction, returns:
 // - How much money we gained
 // - How much resource we sold
-// TODO: Test
 pub fn tx_sell(tx: &Value) -> (f64, f64) {
     let got = json_get_float("added_money", tx).unwrap();
     let amnt = json_get_list("removed_cargo", tx)
@@ -57,7 +56,6 @@ pub fn get_position(planet: &Value) -> Option<(u64, u64, u64)> {
     }
 }
 
-// TODO (#41) problèmes test
 pub fn json_get_key<'a>(key: &str, mut val: &'a Value) -> Option<&'a Value> {
     if !key.contains(".") {
         let obj = val.as_object()?;
