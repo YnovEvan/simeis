@@ -14,16 +14,7 @@ jobs:
     steps:
       - name: Création des PR pour les labels propagate
         run: |
-          # LABELS = "${{ github.event.issue.labels }}"
           tags=$(git describe --tags --all)
           echo "$tags"
           echo "${{ github.GITHUB_REF_NAME}}"
           echo propagate:release/15544555 | cut -d ':' -f 1
-          # for label in $LABELS
-          # do
-          #   if [$label ~= ^propagate:release/]; then
-          #     # gh pr create --title "Fix bug propagate" --head ${{ github.GITHUB_REF_NAME}} --base
-          #     echo "${{ github.GITHUB_REF_NAME}}"
-          #     echo $label | cut -d ':' -f 1
-          #   fi
-          # done
