@@ -147,7 +147,11 @@ impl SimeisSDK {
         let err = datamap
             .remove("error")
             .expect("Missing error field in reply");
-        if err != "ok" { Err(data) } else { Ok(data) }
+        if err != "ok" {
+            Err(data)
+        } else {
+            Ok(data)
+        }
     }
 
     pub fn get<T: ToString>(&self, path: T) -> ApiResult {
@@ -444,11 +448,7 @@ impl SimeisSDK {
     pub fn unload_all(&self, station_id: u64, ship_id: u64) -> ApiResult {
         self.post(format!("/ship/{ship_id}/unload/{station_id}/all"))
     }
-    pub fn return_station_and_unload_all(
-        &self,
-        station_id: u64,
-        ship_id: u64,
-    ) -> ApiResult {
+    pub fn return_station_and_unload_all(&self, station_id: u64, ship_id: u64) -> ApiResult {
         let ship = self.get_ship_status(ship_id)?;
         let station = self.get_station_status(station_id)?;
 
