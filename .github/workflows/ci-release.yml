@@ -48,6 +48,15 @@ jobs:
       - name: Lancement des tests
         run: make test-release
 
+      - name: Lancement des tests avec heavy-testing
+        run: make test-heavy-testing
+
+      - name: Audit
+        run: make audit
+
+      - name: Udeps
+        run: make udeps
+
   build:
     name: Build
     needs: [quality, tests]

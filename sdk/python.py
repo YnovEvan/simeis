@@ -1,4 +1,5 @@
 """Simeis SDK for Python - Client library for Simeis game server."""
+
 import os
 import sys
 import math
@@ -11,6 +12,7 @@ import urllib.parse
 
 class SimeisError(Exception):
     """Custom exception for Simeis API errors."""
+
     pass
 
 
@@ -41,9 +43,7 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
         tail = ""
         if len(qry) > 0:
             tail += "?"
-            tail += "&".join(
-                [f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()]
-            )
+            tail += "&".join([f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()])
 
         qry_url = f"{self.url}{path}{tail}"
 
