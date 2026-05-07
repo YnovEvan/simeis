@@ -17,13 +17,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Installation de rust
-        run: make init
+        run: make rust-init
 
       - name: Formatage
-        run: make fmt
+        run: make rust-fmt
 
       - name: Linting
-        run: make lint
+        run: make rust-lint
 
   python-quality:
     name: Python quality
