@@ -44,7 +44,7 @@ jobs:
             if echo "$CONTENT" | grep -qE "\(#[0-9]+\)"; then
               ISSUE_NUMBER=$(echo "$CONTENT" | grep -oE "\(#[0-9]+\)" | grep -oE "[0-9]+")
             else
-              echo "::error file=$FILE,line=$LINE::TODO sans issue liée : $CONTENT"
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — TODO sans issue liée : $CONTENT"
               FAILED=true
               continue
             fi
@@ -57,10 +57,10 @@ jobs:
             STATE=$(echo "$RESPONSE" | jq -r '.state // empty')
 
             if [ -z "$STATE" ]; then
-              echo "::error file=$FILE,line=$LINE::L'issue #$ISSUE_NUMBER n'existe pas"
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — L'issue #$ISSUE_NUMBER n'existe pas"
               FAILED=true
             elif [ "$STATE" = "closed" ]; then
-              echo "::error file=$FILE,line=$LINE::L'issue #$ISSUE_NUMBER est fermée"
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — L'issue #$ISSUE_NUMBER est fermée"
               FAILED=true
             else
               echo "OK $FILE:$LINE — Issue #$ISSUE_NUMBER est ouverte"
