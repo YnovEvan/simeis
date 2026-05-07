@@ -27,7 +27,7 @@ impl PlanetInfo {
 pub struct Planet {
     pub position: SpaceCoord,
     temperature: u16,
-    solid: bool, // TODO (#25) Remove
+    solid: bool,
 }
 
 impl Planet {
