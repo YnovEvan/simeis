@@ -34,6 +34,12 @@ jobs:
       - name: Linting
         run: make lint
 
+      - name: Audit
+        run: make audit
+
+      - name: Udeps
+        run: make udeps
+
   tests:
     name: Tests
     needs: [origin]
@@ -47,6 +53,9 @@ jobs:
 
       - name: Lancement des tests
         run: make test-release
+
+      - name: Lancement des tests avec heavy-testing
+        run: make test-heavy-testing
 
   build:
     name: Build
