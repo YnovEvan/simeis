@@ -4,7 +4,7 @@
 # - l'issue liée n'existe pas
 # - l'issue est close
 
-name: TODO to Issue
+name: CI - TODO to Issue
 on:
   pull_request:
   push:
