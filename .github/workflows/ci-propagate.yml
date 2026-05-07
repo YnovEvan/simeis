@@ -9,7 +9,7 @@ on:
 
 jobs:
   on-success:
-    if: ${{ github.event.pull_request.merged }}
+    # if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - name: Création des PR pour les labels propagate
