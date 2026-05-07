@@ -1,4 +1,4 @@
-# Workflow qui repère tous les TODO dans les fichiers Rust & Python et y ajoute une issue si un TODO est trouvé
+# Workflow qui repère tous les TODO dans les fichiers Rust & Python
 # Le workflow fail si:
 # - aucune issue n'est liée à un TODO
 # - l'issue liée n'existe pas
@@ -7,15 +7,12 @@
 name: CI - TODO to Issue
 on:
   pull_request:
-  push:
     branches:
-      - main
+      - "*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
       - uses: actions/checkout@v6
 
@@ -71,8 +68,3 @@ jobs:
             exit 1
           fi
           echo "All TODOs have opened issues"
-
-      - name: TODO to Issue
-        uses: alstr/todo-to-issue-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
