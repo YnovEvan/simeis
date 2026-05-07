@@ -1,4 +1,4 @@
-# Workflow qui repère tous les TODO dans le code et y ajoute une issue si un TODO est trouvé
+# Workflow qui repère tous les TODO dans les fichiers Rust & Python et y ajoute une issue si un TODO est trouvé
 # Le workflow fail si:
 # - aucune issue n'est liée à un TODO
 # - l'issue liée n'existe pas
@@ -18,11 +18,6 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@v6
-
-      - name: TODO to Issue
-        uses: alstr/todo-to-issue-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Validate TODOs have linked open issues
         env:
@@ -46,7 +41,6 @@ jobs:
             LINE=$(echo "$match" | cut -d: -f2)
             CONTENT=$(echo "$match" | cut -d: -f3-)
 
-            # Format attendu : TODO (#15)
             if echo "$CONTENT" | grep -qE "\(#[0-9]+\)"; then
               ISSUE_NUMBER=$(echo "$CONTENT" | grep -oE "\(#[0-9]+\)" | grep -oE "[0-9]+")
             else
@@ -77,3 +71,8 @@ jobs:
             exit 1
           fi
           echo "All TODOs have opened issues"
+
+      - name: TODO to Issue
+        uses: alstr/todo-to-issue-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
