@@ -2,60 +2,98 @@
 HELP_COLOR=\033[36m
 RESET=\033[0m
 
+ifdef OS
+   VENV = test_env/Scripts
+else
+   ifeq ($(shell uname), Linux)
+      VENV = test_env/bin
+   endif
+endif
+
+
+## ------------------------ Rust ------------------------ ##
+
 ## help: Affiche cette aide
 help:
 	@echo "Usage:"
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
-## init : Installation de rust et des composants nécessaires (clippy, rustfmt)
-init: 
+## rust-init : Installation de rust et des composants nécessaires (clippy, rustfmt)
+rust-init:
 	@echo "${HELP_COLOR}==> Installation de rust en cours...${RESET}"
 	rustup update stable && rustup default stable
 	cargo install --locked typst-cli
 	rustup component add rustfmt
 	rustup component add clippy
 
-## build: Compile le binaire pour l'OS actuel
-build: init
+## rust-build: Compile le binaire pour l'OS actuel
+rust-build: rust-init
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
-## build-release: Compile le binaire en mode release
-build-release: init
+## rust-build-release: Compile le binaire en mode release
+rust-build-release: rust-init
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
 
-# test: Compile et lance les tests
-test: build
+# rust-test: Compile et lance les tests
+rust-test: rust-build
 	@echo "${HELP_COLOR}==> Lancement des tests...${RESET}"
 	cargo test --verbose
 
-# test-release: Compile et lance les tests en mode release
-test-release: build-release
+# rust-test-release: Compile et lance les tests en mode release
+rust-test-release: rust-build-release
 	@echo "${HELP_COLOR}==> Lancement des tests en mode release...${RESET}"
 	cargo test --release --verbose
 
-# lint: Lint le code avec clippy et traite les warnings comme des erreurs
-lint:
+# lint: Lint le code rust avec clippy et traite les warnings comme des erreurs
+rust-lint:
 	@echo "${HELP_COLOR}==> Linting du code...${RESET}"
 	cargo clippy -- -D warnings
 
 # fmt: Formate le code avec rustfmt et traite les erreurs de formatage comme des erreurs
-fmt:
+rust-fmt:
 	@echo "${HELP_COLOR}==> Formatage du code...${RESET}"
 	cargo fmt --all -- --check
 
-## start: Compile et lance l'application
-start: build
-	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
-	cargo run 
-
-## start: Lance l'application simplement
-run: 
+## rust-start: Compile et lance l'application
+rust-start: rust-build
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
 
-## docu: Création de la documentation (en cas d'erreur : make init)
-docu:
+## rust-docu: Création de la documentation (en cas d'erreur : make init)
+rust-docu:
 	@echo "${HELP_COLOR}==> Generation de la documentation...${RESET}"
 	typst compile ./doc/manual.typ ./doc/manuel.pdf
+
+## rust-check: Vérifier que le code rust compile bien
+rust-check:
+	@echo "${HELP_COLOR}==> Verification de la compilation...${RESET}"
+	cargo check
+
+
+## ------------------------ Python ------------------------ ##
+
+python-init:
+	@echo "${HELP_COLOR}==> Installation de python...${RESET}"
+	python -m venv test_env
+	ls test_env
+	${VENV}/python -m pip install --upgrade pip
+	${VENV}/pip install --upgrade pylint
+	${VENV}/pip install --upgrade black
+
+## python-lint : Lint le code python avec clippy et traite les warnings comme des erreurs
+python-lint:
+	@echo "${HELP_COLOR}==> Linting du code python...${RESET}"
+	${VENV}/pylint */*.py --disable=W
+
+python-fmt:
+	@echo "${HELP_COLOR}==> Formatage du code python...${RESET}"
+	${VENV}/black */*.py
+
+
+init: rust-init python-init
+
+lint: rust-lint python-lint
+
+fmt: rust-fmt python-fmt
