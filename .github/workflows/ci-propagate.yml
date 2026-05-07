@@ -1,9 +1,6 @@
-name: Ci Release
+name: Ci Propagate
 
-on:
-  pull_request:
-    branches:
-      - "feature/propagate"
+on: push
 
 jobs:
   on-success:
