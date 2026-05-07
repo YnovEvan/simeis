@@ -22,6 +22,7 @@ pub fn tx_buy(tx: &Value) -> (f64, f64) {
 // From the market transaction, returns:
 // - How much money we gained
 // - How much resource we sold
+// TODO: Test
 pub fn tx_sell(tx: &Value) -> (f64, f64) {
     let got = json_get_float("added_money", tx).unwrap();
     let amnt = json_get_list("removed_cargo", tx)
@@ -56,6 +57,7 @@ pub fn get_position(planet: &Value) -> Option<(u64, u64, u64)> {
     }
 }
 
+// TODO (#41) problèmes test
 pub fn json_get_key<'a>(key: &str, mut val: &'a Value) -> Option<&'a Value> {
     if !key.contains(".") {
         let obj = val.as_object()?;
@@ -147,7 +149,11 @@ impl SimeisSDK {
         let err = datamap
             .remove("error")
             .expect("Missing error field in reply");
-        if err != "ok" { Err(data) } else { Ok(data) }
+        if err != "ok" {
+            Err(data)
+        } else {
+            Ok(data)
+        }
     }
 
     pub fn get<T: ToString>(&self, path: T) -> ApiResult {
@@ -444,11 +450,7 @@ impl SimeisSDK {
     pub fn unload_all(&self, station_id: u64, ship_id: u64) -> ApiResult {
         self.post(format!("/ship/{ship_id}/unload/{station_id}/all"))
     }
-    pub fn return_station_and_unload_all(
-        &self,
-        station_id: u64,
-        ship_id: u64,
-    ) -> ApiResult {
+    pub fn return_station_and_unload_all(&self, station_id: u64, ship_id: u64) -> ApiResult {
         let ship = self.get_ship_status(ship_id)?;
         let station = self.get_station_status(station_id)?;
 
