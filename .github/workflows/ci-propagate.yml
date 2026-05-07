@@ -10,5 +10,5 @@ jobs:
       - name: Création des PR pour les labels propagate
         run: |
           echo ${{ github.ref_name }}
-          echo ${{ github.event.pull_request.labels.*.name }}
+          echo ${{ github.event.pull_request.labels.[].name }}
           echo propagate:release/15544555 | cut -d ':' -f 2
