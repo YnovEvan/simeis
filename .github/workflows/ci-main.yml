@@ -3,7 +3,7 @@ name: "CI - Main"
 env:
   CARGO_TERM_COLOR: always
 
-on:    
+on:
   pull_request:
     branches:
       - "main"
@@ -17,13 +17,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Installation de rust
-        run: make init
+        run: make rust-init
 
       - name: Formatage
-        run: make fmt
+        run: make rust-fmt
 
       - name: Linting
-        run: make lint
+        run: make rust-lint
 
   tests:
     name: Tests
@@ -33,10 +33,10 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Installation de rust
-        run: make init
+        run: make rust-init
 
       - name: Lancement des tests
-        run: make test
+        run: make rust-test
 
   build:
     name: Build
@@ -46,11 +46,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Installation de rust
-        run: make init
+        run: make rust-init
 
       - name: Compilation du projet
-        run: make build
+        run: make rust-build
 
       - name: Création de la documentation typst
         run: |
-          make docu
+          make rust-docu
