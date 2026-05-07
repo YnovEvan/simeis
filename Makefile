@@ -2,6 +2,15 @@
 HELP_COLOR=\033[36m
 RESET=\033[0m
 
+ifdef OS
+   VENV = test_env/Scripts
+else
+   ifeq ($(shell uname), Linux)
+      VENV = test_env/bin
+   endif
+endif
+
+
 ## ------------------------ Rust ------------------------ ##
 
 ## help: Affiche cette aide
@@ -69,18 +78,18 @@ python-init:
 	@echo "${HELP_COLOR}==> Installation de python...${RESET}"
 	python -m venv test_env
 	ls test_env
-	test_env/Scripts/python -m pip install --upgrade pip
-	test_env/Scripts/pip install --upgrade pylint
-	test_env/Scripts/pip install --upgrade black
+	${VENV}/python -m pip install --upgrade pip
+	${VENV}/pip install --upgrade pylint
+	${VENV}/pip install --upgrade black
 
 ## python-lint : Lint le code python avec clippy et traite les warnings comme des erreurs
 python-lint:
 	@echo "${HELP_COLOR}==> Linting du code python...${RESET}"
-	test_env/Scripts/pylint */*.py --disable=W
+	${VENV}/pylint */*.py --disable=W
 
 python-fmt:
 	@echo "${HELP_COLOR}==> Formatage du code python...${RESET}"
-	test_env/Scripts/black */*.py
+	${VENV}/black */*.py
 
 
 init: rust-init python-init
