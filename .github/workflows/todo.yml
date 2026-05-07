@@ -1,0 +1,18 @@
+# Workflow qui repère tous les TODO dans le code
+# Et y ajoute une issue si un TODO est trouvé
+
+name: TODO to Issue
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: "actions/checkout@v6"
+      - name: "TODO to Issue"
+        uses: "alstr/todo-to-issue-action@v5"
