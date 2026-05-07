@@ -10,6 +10,9 @@ jobs:
     name: Vérification de l'origine de la release
     runs-on: ubuntu-latest
     if: ${{ github.GITHUB_HEAD_REF == 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
+    steps:
+      - name: Réussi si l'origine de PR est valide
+        run: ""
 
   quality:
     name: Quality
