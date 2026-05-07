@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.GITHUB_HEAD_REF != 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
     steps:
-      - name: Échoue si la PR ne vient pas de main OU bug/x
-        run: |
-          echo "${GITHUB_REF}"
-          echo "${GITHUB_HEAD_REF}"
+      - uses: superbrothers/close-pull-request@v3
+        with:
+          comment: "Only PR from main or bug/x are accepted"
 
   quality:
     name: Quality
     runs-on: ubuntu-latest
+    needs: origin
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
@@ -35,6 +35,7 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
+    needs: origin
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
