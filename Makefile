@@ -68,6 +68,7 @@ rust-check:
 python-init:
 	@echo "${HELP_COLOR}==> Installation de python...${RESET}"
 	python -m venv test_env
+	ls test_env/Scripts
 	test_env/Scripts/python install --upgrade pip
 	test_env/Scripts/pip install --upgrade pylint
 	test_env/Scripts/pip install --upgrade black
