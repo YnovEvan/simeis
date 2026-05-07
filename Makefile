@@ -27,22 +27,22 @@ rust-init:
 	rustup component add clippy
 
 ## rust-build: Compile le binaire pour l'OS actuel
-rust-build: init
+rust-build: rust-init
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## rust-build-release: Compile le binaire en mode release
-rust-build-release: init
+rust-build-release: rust-init
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
 
 # rust-test: Compile et lance les tests
-rust-test: build
+rust-test: rust-build
 	@echo "${HELP_COLOR}==> Lancement des tests...${RESET}"
 	cargo test --verbose
 
 # rust-test-release: Compile et lance les tests en mode release
-rust-test-release: build-release
+rust-test-release: rust-build-release
 	@echo "${HELP_COLOR}==> Lancement des tests en mode release...${RESET}"
 	cargo test --release --verbose
 
@@ -57,7 +57,7 @@ rust-fmt:
 	cargo fmt --all -- --check
 
 ## rust-start: Compile et lance l'application
-rust-start: build
+rust-start: rust-build
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
 
