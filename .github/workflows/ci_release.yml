@@ -1,56 +1,56 @@
 name: Ci Release
 
 on:
-    push:
-        tags:
-            - "*.*.*"
+  push:
+    tags:
+      - "*.*.*"
 
 jobs:
-    quality:
-        name: Quality
-        runs-on: ubuntu-latest
-        steps:
-            - name: Récupération du code
-              uses: actions/checkout@v6
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
 
-            - name: Installation de rust
-              run: make init
+      - name: Installation de rust
+        run: make rust-init
 
-            - name: Formatage
-              run: make fmt
+      - name: Formatage
+        run: make rust-fmt
 
-            - name: Linting
-              run: make lint
-    
-    tests:
-        name: Tests
-        runs-on: ubuntu-latest
-        steps:
-            - name: Récupération du code
-              uses: actions/checkout@v6
+      - name: Linting
+        run: make rust-lint
 
-            - name: Installation de rust
-              run: make init
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
 
-            - name: Lancement des tests
-              run: make test-release
+      - name: Installation de rust
+        run: make rust-init
 
-    build:
-        name: Build
-        needs: [quality, tests]
-        runs-on: ubuntu-latest
-        steps:
-            - name: Récupération du code
-              uses: actions/checkout@v6
+      - name: Lancement des tests
+        run: make rust-test-release
 
-            - name: Installation de rust
-              run: make init
+  build:
+    name: Build
+    needs: [quality, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
 
-            - name: Compilation
-              run: make build-release
+      - name: Installation de rust
+        run: make rust-init
 
-            - name: Optimisation executable
-              run: |
-                  ls -lah ./target/release/
-                  strip ./target/release/simeis-server
-                  ls -lah ./target/release/
+      - name: Compilation
+        run: make rust-build-release
+
+      - name: Optimisation executable
+        run: |
+          ls -lah ./target/release/
+          strip ./target/release/simeis-server
+          ls -lah ./target/release/
