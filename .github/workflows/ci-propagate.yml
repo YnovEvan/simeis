@@ -1,9 +1,7 @@
 name: Ci Release
 
 on:
-  # pull_request:
-  #   types: [closed]
-  push:
+  pull_request:
     branches:
       - "feature/propagate"
 
@@ -14,7 +12,6 @@ jobs:
     steps:
       - name: Création des PR pour les labels propagate
         run: |
-          tags=$(git describe --tags --all)
-          echo "$tags"
           echo "${{ github.GITHUB_REF_NAME}}"
+          echo "${{ github.event.branch.labels}}"
           echo propagate:release/15544555 | cut -d ':' -f 1
