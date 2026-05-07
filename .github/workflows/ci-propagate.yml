@@ -1,0 +1,25 @@
+name: Ci Release
+
+on:
+  # pull_request:
+  #   types: [closed]
+  push:
+    branches:
+      - "feature/propagate"
+
+jobs:
+  on-success:
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Création des PR pour les labels propagate
+        run: |
+          LABELS = ${{ github.event.issue.labels }}
+          for label in $LABELS
+          do
+            if [$label ~= ^propagate:release/]; then
+              # gh pr create --title "Fix bug propagate" --head ${{ github.GITHUB_REF_NAME}} --base
+              echo "${{ github.GITHUB_REF_NAME}}"
+              echo $label | cut -d ':' -f 1
+            fi
+          done
