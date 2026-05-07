@@ -1,0 +1,69 @@
+name: Ci Release
+
+on:
+  pull_request:
+    branches:
+      - "release/*"
+
+jobs:
+  origin:
+    name: Vérification de l'origine de la release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Échoue si l'origine de PR n'est pas valide
+        run: |
+          SOURCE_REF="${{ github.head_ref }}"
+          if [[ "$SOURCE_REF" != "main" && ! "$SOURCE_REF" =~ ^bug/ ]]; then
+            exit 1
+          fi
+
+  quality:
+    name: Quality
+    needs: [origin]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de rust
+        run: make init
+
+      - name: Formatage
+        run: make fmt
+
+      - name: Linting
+        run: make lint
+
+  tests:
+    name: Tests
+    needs: [origin]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de rust
+        run: make init
+
+      - name: Lancement des tests
+        run: make test-release
+
+  build:
+    name: Build
+    needs: [quality, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de rust
+        run: make init
+
+      - name: Compilation
+        run: make build-release
+
+      - name: Optimisation executable
+        run: |
+          ls -lah ./target/release/
+          strip ./target/release/simeis-server
+          ls -lah ./target/release/
