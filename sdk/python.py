@@ -1,32 +1,23 @@
-<<<<<<< HEAD
-=======
 """Simeis SDK for Python - Client library for Simeis game server."""
-import os
-import sys
-import math
-import time
->>>>>>> main
+
 import json
 import math
 import os
 import string
 import sys
 import time
-import urllib.request
 import urllib.parse
-
+import urllib.request
 
 
 class SimeisError(Exception):
     """Custom exception for Simeis API errors."""
+
     pass
 
 
 def get_dist(a, b):
-<<<<<<< HEAD
-=======
     """Calculate Euclidean distance between two 3D points."""
->>>>>>> main
     return math.sqrt(((a[0] - b[0]) ** 2) + ((a[1] - b[1]) ** 2) + ((a[2] - b[2]) ** 2))
 
 
@@ -39,11 +30,6 @@ def check_has(alld, key, *req):
 class SimeisSDK:  # pylint: disable=too-many-public-methods
     """SDK for interacting with the Simeis game server API."""
 
-<<<<<<< HEAD
-
-class SimeisSDK:
-=======
->>>>>>> main
     def __init__(self, username, ip, port):
         """Initialize the SDK with connection details."""
         self.url = f"http://{ip}:{port}"
@@ -57,13 +43,7 @@ class SimeisSDK:
         tail = ""
         if len(qry) > 0:
             tail += "?"
-            tail += "&".join(
-<<<<<<< HEAD
-                ["{}={}".format(k, urllib.parse.quote(v)) for k, v in qry.items()]
-=======
-                [f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()]
->>>>>>> main
-            )
+            tail += "&".join([f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()])
 
         qry_url = f"{self.url}{path}{tail}"
 
@@ -87,18 +67,6 @@ class SimeisSDK:
     def post(self, *args, **kwargs):
         """Perform a POST request."""
         return self.api(*args, method="POST", **kwargs)
-<<<<<<< HEAD
-
-    # If we have a file containing the player ID and key, use it
-    # If not, create a new player
-    # If the player has lost, print an error message
-    def setup_player(self, username, force_register=False):
-        # Sanitize the username, remove any symbols
-        username = "".join(
-            [c for c in username if c in string.ascii_letters + string.digits]
-        ).lower()
-=======
->>>>>>> main
 
     def setup_player(self, username, force_register=False):
         """Set up player account, creating or loading existing account."""
@@ -140,14 +108,6 @@ class SimeisSDK:
         return self.get(f"/station/{sta}")
 
     def shop_list_modules(self, sta):
-<<<<<<< HEAD
-        all = self.get(f"/station/{sta}/shop/modules")
-        return sorted(all, key=lambda mod: mod["price"])
-
-    def shop_list_ship(self, sta):
-        all = self.get(f"/station/{sta}/shipyard/list")["ships"]
-        return sorted(all, key=lambda ship: ship["price"])
-=======
         """List available modules at a station."""
         all_modules = self.get(f"/station/{sta}/shop/modules")
         return sorted(all_modules, key=lambda mod: mod["price"])
@@ -156,7 +116,6 @@ class SimeisSDK:
         """List available ships at a station."""
         all_ships = self.get(f"/station/{sta}/shipyard/list")["ships"]
         return sorted(all_ships, key=lambda ship: ship["price"])
->>>>>>> main
 
     def buy_ship(self, sta, shipid):
         """Purchase a ship at a station."""
@@ -171,10 +130,7 @@ class SimeisSDK:
         return self.post(f"/station/{sta}/crew/hire/{crewtype.lower()}")
 
     def assign_crew_to_ship(self, sta, shipid, operator_id, role):
-<<<<<<< HEAD
-=======
         """Assign crew member to a ship role."""
->>>>>>> main
         return self.post(
             f"/station/{sta}/crew/assign/{operator_id}/ship/{shipid}/{role}"
         )
