@@ -1,7 +1,5 @@
 """Simeis SDK for Python - Client library for Simeis game server."""
 
-import json
-import math
 import os
 import string
 import sys
