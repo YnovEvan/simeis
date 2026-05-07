@@ -9,7 +9,7 @@ jobs:
   origin:
     name: Vérification de l'origine de la release
     runs-on: ubuntu-latest
-    if: ${{ GITHUB_HEAD_REF != 'main' || GITHUB_HEAD_REF == 'bug/*' }}
+    if: ${{ github.GITHUB_HEAD_REF != 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
     steps:
       - name: Échoue si la PR ne vient pas de main OU bug/x
         run: |
