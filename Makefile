@@ -82,4 +82,8 @@ python-fmt:
 	test_env/Scripts/black */*.py
 
 
+init: rust-init python-init
+
 lint: rust-lint python-lint
+
+fmt: rust-fmt python-fmt
