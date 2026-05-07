@@ -9,15 +9,15 @@ jobs:
   origin:
     name: Vérification de l'origine de la release
     runs-on: ubuntu-latest
-    if: ${{ github.GITHUB_HEAD_REF == 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
+    if: ${{ github.GITHUB_HEAD_REF != 'main' || github.GITHUB_HEAD_REF != 'bug/*' }}
     steps:
-      - name: Réussi si l'origine de PR est valide
-        run: ""
+      - name: Échoue si l'origine de PR n'est pas valide
+        run: exit 1
 
   quality:
     name: Quality
     runs-on: ubuntu-latest
-    needs: origin
+    if: ${{ github.GITHUB_HEAD_REF == 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
@@ -34,7 +34,7 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
-    needs: origin
+    if: ${{ github.GITHUB_HEAD_REF == 'main' || github.GITHUB_HEAD_REF == 'bug/*' }}
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
