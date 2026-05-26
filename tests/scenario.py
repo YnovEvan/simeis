@@ -3,7 +3,7 @@ from sdk.python import SimeisSDK
 
 def scenario1():
     print("On créer un nouveau joueur")
-    player = SimeisSDK("test", "localhost", 8080)
+    player = SimeisSDK("test1", "localhost", 8080)
 
     status = player.get_player_status()
     print(status)
