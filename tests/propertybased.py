@@ -52,47 +52,38 @@ def addition():
     z = random.randrange(0, 10000)
 
     assert x + y == y + x, f"Commutativité échouée: {x} + {y} != {y} + {x}"
-    assert (x + y) + z == x + (
-        y + z
-    ), f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
+    assert (x + y) + z == x + (y + z), (
+        f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
+    )
     assert x + 0 == x, f"Identité échoué: {x} + 0 != {x}"
     assert x + y >= x, f"Somme doit être >= au premier opérateur: {x} + {y} < {x}"
     assert x + y >= y, f"Somme doit être >= au second opérateur: {x} + {y} < {y}"
 
 
+def rand_point():
+    """Génère un point 3D aléatoire."""
+    return tuple(random.randrange(-100, 100) for _ in range(3))
+
+
 def distance():
     """Test distance calculation between random 3D points."""
-    x1 = random.randrange(-100, 100)
-    y1 = random.randrange(-100, 100)
-    z1 = random.randrange(-100, 100)
-    a = (x1, y1, z1)
-
-    x2 = random.randrange(-100, 100)
-    y2 = random.randrange(-100, 100)
-    z2 = random.randrange(-100, 100)
-    b = (x2, y2, z2)
-
-    x3 = random.randrange(-100, 100)
-    y3 = random.randrange(-100, 100)
-    z3 = random.randrange(-100, 100)
-    c = (x3, y3, z3)
+    a = rand_point()
+    b = rand_point()
+    c = rand_point()
 
     dist_ab = get_dist(a, b)
-    dist_ba = get_dist(b, a)
-    dist_aa = get_dist(a, a)
     dist_ac = get_dist(a, c)
     dist_bc = get_dist(b, c)
 
-    # Test trop strict pour distance = 0.0 pour la seed 4480881574280375424
-    # assert dist_ab > 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
     assert dist_ab >= 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
-    assert (
-        dist_ab == dist_ba
-    ), f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={dist_ba}"
-    assert dist_aa == 0, f"Distance d'un point à lui-même doit être 0, obtenu {dist_aa}"
-    assert (
-        dist_ac <= dist_ab + dist_bc + 1e-9
-    ), f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > dist(a,b)+dist(b,c)={dist_ab + dist_bc}"
+    assert dist_ab == get_dist(b, a), (
+        f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={get_dist(b, a)}"
+    )
+    assert get_dist(a, a) == 0, "Distance d'un point à lui-même doit être 0"
+    triangle_sum = dist_ab + dist_bc
+    assert dist_ac <= triangle_sum + 1e-9, (
+        f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > {triangle_sum}"
+    )
 
 
 create_property_based_test(addition, time_test=TIME_TEST)
