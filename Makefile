@@ -135,5 +135,6 @@ test-init:
 test-coverage: 
 	cargo tarpaulin
 
+## test-coverage-ci: Lance les tests pour la ci
 test-coverage-ci: 
 	cargo tarpaulin --fail-under ${MIN_COVERAGE} --out json 
