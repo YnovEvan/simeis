@@ -52,9 +52,9 @@ def addition():
     z = random.randrange(0, 10000)
 
     assert x + y == y + x, f"Commutativité échouée: {x} + {y} != {y} + {x}"
-    assert (x + y) + z == x + (y + z), (
-        f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
-    )
+    assert (x + y) + z == x + (
+        y + z
+    ), f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
     assert x + 0 == x, f"Identité échoué: {x} + 0 != {x}"
     assert x + y >= x, f"Somme doit être >= au premier opérateur: {x} + {y} < {x}"
     assert x + y >= y, f"Somme doit être >= au second opérateur: {x} + {y} < {y}"
@@ -86,13 +86,13 @@ def distance():
     # Test trop strict pour distance = 0.0 pour la seed 4480881574280375424
     # assert dist_ab > 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
     assert dist_ab >= 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
-    assert dist_ab == dist_ba, (
-        f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={dist_ba}"
-    )
+    assert (
+        dist_ab == dist_ba
+    ), f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={dist_ba}"
     assert dist_aa == 0, f"Distance d'un point à lui-même doit être 0, obtenu {dist_aa}"
-    assert dist_ac <= dist_ab + dist_bc + 1e-9, (
-        f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > dist(a,b)+dist(b,c)={dist_ab + dist_bc}"
-    )
+    assert (
+        dist_ac <= dist_ab + dist_bc + 1e-9
+    ), f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > dist(a,b)+dist(b,c)={dist_ab + dist_bc}"
 
 
 create_property_based_test(addition, time_test=TIME_TEST)
