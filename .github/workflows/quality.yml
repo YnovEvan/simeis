@@ -60,6 +60,8 @@ jobs:
   tests-coverage:
     name: Vérification couverture de tests
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
