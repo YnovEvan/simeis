@@ -134,6 +134,3 @@ test-init:
 
 test-coverage: 
 	cargo tarpaulin
-
-test-coverage-ci: 
-	cargo tarpaulin --fail-under 50

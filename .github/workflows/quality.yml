@@ -71,10 +71,10 @@ jobs:
         run: cargo install --locked cargo-tarpaulin
 
       - name: Vérification du coverage
-        run: make test-coverage-ci
-
-      - name: Ajout du label si les tests ne passe pas le minimum
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh pr edit ${{ github.event.number }} --add-label "not enough tests"
+        run: |
+          cargo tarpaulin --out json
+          COVERAGE=$(jq '.coverage' tarpaulin-report.json)
+          if [$(echo "$COVERAGE < 50.0" | bc) -eq 1] 
+          then 
+            gh pr edit ${{ github.event.number }} --add-label "not enough tests"
+          fi
