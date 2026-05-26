@@ -72,8 +72,13 @@ jobs:
 
       - name: Vérification du coverage
         run: |
-          cargo tarpaulin --out json
+          # Lancement du coverage (échoue si inférieur à MIN_COVERAGE & sortie json)
+          make test-coverage-ci
+
+          # Récupération du chiffre de coverage
           COVERAGE=$(jq '.coverage' tarpaulin-report.json)
+
+          # Si le coverage n'a pas échoué mais qu'il est inférieur à 50% attribution du label "not enough tests"
           if [ $(echo "$COVERAGE < 50.0" | bc) -eq 1 ] 
           then 
             gh pr edit ${{ github.event.number }} --add-label "not enough tests"

@@ -1,7 +1,7 @@
 # --- Couleurs pour l'affichage ---
 HELP_COLOR=\033[36m
 RESET=\033[0m
-
+MIN_COVERAGE=5
 ifdef OS
    VENV = test_env/Scripts
 else
@@ -134,3 +134,6 @@ test-init:
 
 test-coverage: 
 	cargo tarpaulin
+
+test-coverage-ci: 
+	cargo tarpaulin --fail-under ${MIN_COVERAGE} --out json 
