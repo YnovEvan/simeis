@@ -59,6 +59,7 @@ jobs:
 
   python-functional-test:
     name: Tests functionnal
+    needs: [origin]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
