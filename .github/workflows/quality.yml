@@ -56,3 +56,14 @@ jobs:
 
       - name: Tests property-based
         run: make python-property-test
+
+  python-functional-test:
+    name: Tests functionnal
+    needs: [origin]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Tests functionnal
+        run: make python-functional-test

@@ -1,13 +1,13 @@
 """Simeis SDK for Python - Client library for Simeis game server."""
 
-import os
-import sys
-import math
-import time
 import json
+import math
+import os
 import string
-import urllib.request
+import sys
+import time
 import urllib.parse
+import urllib.request
 
 
 class SimeisError(Exception):
@@ -110,7 +110,7 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
     def shop_list_modules(self, sta):
         """List available modules at a station."""
         all_modules = self.get(f"/station/{sta}/shop/modules")
-        return sorted(all_modules, key=lambda mod: mod["price"])
+        return all_modules
 
     def shop_list_ship(self, sta):
         """List available ships at a station."""
@@ -133,6 +133,12 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
         """Assign crew member to a ship role."""
         return self.post(
             f"/station/{sta}/crew/assign/{operator_id}/ship/{shipid}/{role}"
+        )
+
+    def assign_crew_to_module(self, sta, crew_id, ship_id, mod_id):
+        """Assign crew member to a module."""
+        return self.post(
+            f"/station/{sta}/crew/assign/{crew_id}/ship/{ship_id}/{mod_id}"
         )
 
     def station_has_trader(self, sta):
