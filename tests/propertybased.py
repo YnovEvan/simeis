@@ -1,9 +1,21 @@
 """Property-based testing utilities and example tests."""
 
+import argparse
 import math
+import random
 import sys
 import time
-import random
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--time",
+    type=int,
+    default=3,
+    help="Durée de test en secondes par propriété (défaut: 3)",
+)
+args = parser.parse_args()
+
+TIME_TEST = args.time
 
 
 def create_property_based_test(f, regressions=None, time_test=10):
@@ -39,19 +51,44 @@ def addition():
     y = random.randrange(0, 10000)
     z = random.randrange(0, 10000)
 
+    assert x + y == y + x, f"Commutativité échouée: {x} + {y} != {y} + {x}"
+    assert (x + y) + z == x + (y + z), (
+        f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
+    )
+    assert x + 0 == x, f"Identité échoué: {x} + 0 != {x}"
+    assert x + y >= x, f"Somme doit être >= au premier opérateur: {x} + {y} < {x}"
+    assert x + y >= y, f"Somme doit être >= au second opérateur: {x} + {y} < {y}"
+
+
+def rand_point():
+    """Génère un point 3D aléatoire."""
+    return tuple(random.randrange(-100, 100) for _ in range(3))
+
 
 def distance():
     """Test distance calculation between random 3D points."""
-    x1 = random.randrange(-100, 100)
-    y1 = random.randrange(-100, 100)
-    z1 = random.randrange(-100, 100)
-    a = (x1, y1, z1)
+    a = rand_point()
+    b = rand_point()
+    c = rand_point()
 
-    x2 = random.randrange(-100, 100)
-    y2 = random.randrange(-100, 100)
-    z2 = random.randrange(-100, 100)
-    b = (x2, y2, z2)
+    dist_ab = get_dist(a, b)
+    dist_ac = get_dist(a, c)
+    dist_bc = get_dist(b, c)
+
+    assert dist_ab >= 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
+    assert dist_ab == get_dist(b, a), (
+        f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={get_dist(b, a)}"
+    )
+    assert get_dist(a, a) == 0, "Distance d'un point à lui-même doit être 0"
+    triangle_sum = dist_ab + dist_bc
+    assert dist_ac <= triangle_sum + 1e-9, (
+        f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > {triangle_sum}"
+    )
 
 
-create_property_based_test(addition, time_test=3)
-create_property_based_test(distance, regressions=[4480881574280375424], time_test=10)
+create_property_based_test(addition, time_test=TIME_TEST)
+create_property_based_test(
+    distance,
+    regressions=[4480881574280375424],
+    time_test=TIME_TEST,
+)
