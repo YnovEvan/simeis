@@ -57,6 +57,20 @@ jobs:
       - name: Lancement des tests avec heavy-testing
         run: make test-heavy-testing
 
+  python-property-test-heavy:
+    name: Tests property-based (lourd)
+    needs: [origin]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de python
+        run: make python-init
+
+      - name: Tests property-based (mode lourd)
+        run: make python-property-test-heavy
+
   build:
     name: Build
     needs: [quality, tests]

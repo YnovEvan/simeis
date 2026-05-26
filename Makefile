@@ -112,6 +112,17 @@ python-fmt:
 	${VENV}/black */*.py
 
 
+## python-property-test: Lance les tests property-based (mode rapide, 3s par propriété)
+python-property-test:
+	@echo "${HELP_COLOR}==> Lancement des tests property-based (rapide)...${RESET}"
+	${VENV}/python tests/propertybased.py --time 3
+
+## python-property-test-heavy: Lance les tests property-based en mode lourd (120s par propriété)
+python-property-test-heavy:
+	@echo "${HELP_COLOR}==> Lancement des tests property-based (lourd)...${RESET}"
+	${VENV}/python tests/propertybased.py --time 120
+
+
 init: rust-init python-init
 
 lint: rust-lint python-lint
