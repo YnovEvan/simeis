@@ -60,6 +60,9 @@ jobs:
   tests-coverage:
     name: Vérification couverture de tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
