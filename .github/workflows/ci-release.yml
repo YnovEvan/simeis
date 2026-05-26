@@ -80,7 +80,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Tests functionnal
-        run: python-functional-test
+        run: make python-functional-test
 
   build:
     name: Build
