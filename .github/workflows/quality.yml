@@ -40,3 +40,20 @@ jobs:
 
       - name: Linting python
         run: make python-lint
+
+  tests-coverage:
+    name: Vérification couverture de tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Installation de cargo-tarpaulin
+        run: cargo install --locked cargo-tarpaulin
+
+      - name: Vérification du coverage
+        run: make test-coverage-ci
+
+      - name: Ajout du label si les tests ne passe pas le minimum
+        if: failure()
+        run: gh pr edit --add-label "not enough tests"

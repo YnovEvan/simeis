@@ -117,3 +117,12 @@ init: rust-init python-init
 lint: rust-lint python-lint
 
 fmt: rust-fmt python-fmt
+
+test-init: 
+	cargo install --locked cargo-tarpaulin
+
+test-coverage: 
+	cargo tarpaulin
+
+test-coverage-ci: 
+	cargo tarpaulin --fail-under 50
