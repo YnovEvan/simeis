@@ -63,6 +63,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
