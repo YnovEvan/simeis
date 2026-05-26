@@ -1,7 +1,12 @@
-from sdk.python import SimeisSDK
+"""Scénarios de tests pour le SDK Simeis."""
+
+import time
+
+from sdk import SimeisSDK
 
 
 def scenario1():
+    """Scénario: Création d'un joueur et achat d'un vaisseau."""
     print("On créer un nouveau joueur")
     player = SimeisSDK("test1", "localhost", 8080)
 
@@ -27,6 +32,7 @@ def scenario1():
 
 
 def get_less_expensive_ship(player: SimeisSDK, station_id, money):
+    """Retourne l'ID du vaisseau le moins cher disponible à la station."""
     market = player.shop_list_ship(station_id)
     print(market)
     for ship in market:
@@ -49,8 +55,8 @@ def scenario2():
     ship_id = get_less_expensive_ship(player, station_id, initial_money)
     player.buy_ship(station_id, ship_id)
 
-    new_status = player.get_player_status()
-    ship = new_status["ships"][0]["id"]
+    status = player.get_player_status()
+    ship = status["ships"][0]["id"]
 
     print("On embauche un pilote")
     pilot = player.hire_crew(station_id, "Pilot")
@@ -61,12 +67,10 @@ def scenario2():
 
     planets = player.scan_planets(station_id)
     if planets:
-        target_planet = planets[0]
-
-        print(f"Planète cible : {target_planet}")
+        print(f"Planète cible : {planets[0]}")
 
         print("On achète un module d'extraction associé à la planète")
-        if target_planet["solid"]:
+        if planets[0]["solid"]:
             player.buy_module_on_ship(station_id, ship, "Miner")
         else:
             player.buy_module_on_ship(station_id, ship, "GasSucker")
@@ -81,13 +85,10 @@ def scenario2():
         )
 
         print("On se déplace vers une planète pour extraire des ressources")
-        player.travel(ship, target_planet["position"])
+        player.travel(ship, planets[0]["position"])
 
         print("On commence l'extraction")
         player.start_extraction(ship)
-
-        # Attendre que l'extraction se termine
-        import time
 
         time.sleep(5)
 
@@ -104,6 +105,6 @@ def scenario2():
             if amount > 0 and resource != "Fuel":
                 player.sell_resource(station_id, resource, amount)
 
-        new_status = player.get_player_status()
-        print(f"Argent avant : {initial_money}, Argent après : {new_status['money']}")
+        status = player.get_player_status()
+        print(f"Argent avant : {initial_money}, Argent après : {status['money']}")
         print("✓ Extraction et vente réussies")
