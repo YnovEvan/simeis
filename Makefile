@@ -1,6 +1,10 @@
 # --- Couleurs pour l'affichage ---
 HELP_COLOR=\033[36m
 RESET=\033[0m
+
+PORT=8080# Change par le port réel de ton API
+PID_FILE=api.pid
+BINARY_PATH=target/debug/simeis-server
 MIN_COVERAGE=5
 ifdef OS
    VENV = test_env/Scripts
@@ -122,6 +126,23 @@ python-property-test-heavy:
 	@echo "${HELP_COLOR}==> Lancement des tests property-based (lourd)...${RESET}"
 	${VENV}/python tests/propertybased.py --time 120
 
+# python-functional-test: Lance les tests fonctionnels
+python-functional-test: rust-build python-init
+	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API Rust...${RESET}"
+	@$(BINARY_PATH) & echo $$! > $(PID_FILE)
+	@echo "${HELP_COLOR}==> Attente que l'API réponde sur le port $(PORT)...${RESET}"
+	sleep 3
+	@echo "${HELP_COLOR}==> Lancement des tests fonctionnels...${RESET}"
+	python -m tests.main || (echo "❌ Erreur durant les tests"; $(MAKE) stop-api; exit 1)
+	@$(MAKE) stop-api
+
+# Cible interne pour nettoyer le processus Rust
+stop-api:
+	@if [ -f $(PID_FILE) ]; then \
+		echo "${HELP_COLOR}==> Arrêt de l'API Rust (PID $$(cat $(PID_FILE)))...${RESET}"; \
+		kill $$(cat $(PID_FILE)) 2>/dev/null || true; \
+		rm -f $(PID_FILE); \
+	fi
 
 init: rust-init python-init
 
