@@ -16,7 +16,23 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de rust
         run: make rust-init
 
       - name: Formatage
@@ -32,7 +48,23 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de rust
         run: make rust-init
 
       - name: Lancement des tests
@@ -45,7 +77,23 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de rust
         run: make rust-init
 
       - name: Compilation du projet
