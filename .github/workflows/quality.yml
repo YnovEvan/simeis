@@ -61,8 +61,9 @@ jobs:
             ${{ runner.os }}-python-
             ${{ runner.os }}-
 
-      - name: Installation de python
-        run: make python-install
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de python
+        run: make python-init
 
       - name: Formatage python
         run: make python-fmt
@@ -94,8 +95,9 @@ jobs:
             ${{ runner.os }}-python-
             ${{ runner.os }}-
 
-      - name: Installation de python
-        run: make python-install
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de python
+        run: make python-init
 
       - name: Tests property-based
         run: make python-property-test

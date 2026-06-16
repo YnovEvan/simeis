@@ -98,10 +98,6 @@ rust-check:
 
 ## ------------------------ Python ------------------------ ##
 
-python-install:
-	${VENV}/python -m pip install --upgrade pip
-	${VENV}/pip install -r requirements.txt -v
-	
 python-init:
 	@echo "${HELP_COLOR}==> Installation de python...${RESET}"
 	python -m venv test_env
