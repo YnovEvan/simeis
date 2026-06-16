@@ -31,7 +31,7 @@ rust-init:
 	rustup component add clippy
 
 ## rust-build: Compile le binaire pour l'OS actuel
-rust-build: rust-init
+rust-build:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
@@ -126,7 +126,7 @@ python-property-test-heavy:
 	${VENV}/python tests/propertybased.py --time 120
 
 # python-functional-test: Lance les tests fonctionnels
-python-functional-test: rust-build python-init
+python-functional-test: rust-build
 	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API Rust...${RESET}"
 	@$(BINARY_PATH) & echo $$! > $(PID_FILE)
 	@echo "${HELP_COLOR}==> Attente que l'API réponde sur le port $(PORT)...${RESET}"

@@ -111,6 +111,43 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de rust
+        run: make rust-init
+
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de python
+        run: make python-init
+
       - name: Tests functionnal
         run: make python-functional-test
 
