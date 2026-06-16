@@ -31,7 +31,8 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
-      - name: Installation de rust
+      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+        name: Installation de rust
         run: make rust-init
 
       - name: Formatage
