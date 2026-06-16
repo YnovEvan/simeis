@@ -98,13 +98,16 @@ rust-check:
 
 ## ------------------------ Python ------------------------ ##
 
+python-install:
+	${VENV}/python -m pip install --upgrade pip
+	${VENV}/pip install -r requirements.txt -v
+	
 python-init:
 	@echo "${HELP_COLOR}==> Installation de python...${RESET}"
 	python -m venv test_env
 	ls test_env
 	${VENV}/python -m pip install --upgrade pip
-	${VENV}/pip install --upgrade pylint
-	${VENV}/pip install --upgrade black
+	${VENV}/pip install -r requirements.txt -v
 
 ## python-lint : Lint le code python avec clippy et traite les warnings comme des erreurs
 python-lint:

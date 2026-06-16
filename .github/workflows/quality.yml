@@ -16,6 +16,21 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
       - name: Installation de rust
         run: make rust-init
 
@@ -32,8 +47,22 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+
       - name: Installation de python
-        run: make python-init
+        run: make python-install
 
       - name: Formatage python
         run: make python-fmt
@@ -51,15 +80,29 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+
       - name: Installation de python
-        run: make python-init
+        run: make python-install
 
       - name: Tests property-based
         run: make python-property-test
 
   python-functional-test:
     name: Tests functionnal
-    needs: [origin]
+    needs: [python-property-test]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
@@ -80,7 +123,23 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de cargo-tarpaulin
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de cargo-tarpaulin
         run: cargo install --locked cargo-tarpaulin
 
       - name: Vérification du coverage
