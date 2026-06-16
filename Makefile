@@ -5,7 +5,7 @@ RESET=\033[0m
 PORT=8080# Change par le port réel de ton API
 PID_FILE=api.pid
 BINARY_PATH=target/debug/simeis-server
-
+MIN_COVERAGE=5
 ifdef OS
    VENV = test_env/Scripts
 else
@@ -149,3 +149,13 @@ init: rust-init python-init
 lint: rust-lint python-lint
 
 fmt: rust-fmt python-fmt
+
+test-init: 
+	cargo install --locked cargo-tarpaulin
+
+test-coverage: 
+	cargo tarpaulin
+
+## test-coverage-ci: Lance les tests pour la ci
+test-coverage-ci: 
+	cargo tarpaulin --fail-under ${MIN_COVERAGE} --out json 
