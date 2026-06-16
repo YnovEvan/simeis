@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
-      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
         name: Installation de rust
         run: make rust-init
 
