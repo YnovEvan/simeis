@@ -29,7 +29,8 @@ rust-init:
 	cargo install --locked typst-cli
 	rustup component add rustfmt
 	rustup component add clippy
-
+	cargo install --locked cargo-tarpaulin
+	
 ## rust-build: Compile le binaire pour l'OS actuel
 rust-build:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
@@ -148,9 +149,6 @@ init: rust-init python-init
 lint: rust-lint python-lint
 
 fmt: rust-fmt python-fmt
-
-test-init: 
-	cargo install --locked cargo-tarpaulin
 
 test-coverage: 
 	cargo tarpaulin
