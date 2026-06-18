@@ -150,6 +150,10 @@ lint: rust-lint python-lint
 
 fmt: rust-fmt python-fmt
 
+# Installe cargo tarpaulin si pas installé
+rust-test-init:
+	@which cargo-tarpaulin > /dev/null 2>&1 || cargo install --locked cargo-tarpaulin
+
 test-coverage: 
 	cargo tarpaulin
 
