@@ -491,28 +491,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "derive_more"
-version = "2.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d751e9e49156b02b44f9c1815bcb94b984cdcc4396ecc32521c739452808b134"
-dependencies = [
- "derive_more-impl",
-]
-
-[[package]]
-name = "derive_more-impl"
-version = "2.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "799a97264921d8623a957f6c3b9011f3b5492f557bbb7a5a19b7fa6d06ba8dcb"
-dependencies = [
- "proc-macro2",
- "quote",
- "rustc_version",
- "syn",
- "unicode-xid",
-]
-
-[[package]]
 name = "dispatch2"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -964,13 +942,12 @@ dependencies = [
 
 [[package]]
 name = "ntex"
-version = "3.9.8"
+version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c2017bc5485001ac6952b27b3a54472cdf8f88014646b1b3df369dbd46d4bc6"
+checksum = "4a3a3c15c64dffe92d1129a8bc9ae94cd5439454506e2b79ff16768c445f9e6e"
 dependencies = [
  "base64",
  "bitflags",
- "derive_more",
  "encoding_rs",
  "env_logger",
  "flate2",
@@ -982,7 +959,7 @@ dependencies = [
  "ntex-bytes",
  "ntex-codec",
  "ntex-dispatcher",
- "ntex-error",
+ "ntex-error 1.7.1",
  "ntex-h2",
  "ntex-http",
  "ntex-io",
@@ -1041,6 +1018,18 @@ dependencies = [
 
 [[package]]
 name = "ntex-error"
+version = "1.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76342515c9dc1ce346cef8f6aa52090f400a3389ddd25c6a701772e8e40d5c76"
+dependencies = [
+ "backtrace",
+ "foldhash",
+ "ntex-bytes",
+ "thiserror",
+]
+
+[[package]]
+name = "ntex-error"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d47e8dee801da88cca194481cb2f04a5de7cb949e3e9785086fb1b6a010884d"
@@ -1064,7 +1053,7 @@ dependencies = [
  "ntex-bytes",
  "ntex-codec",
  "ntex-dispatcher",
- "ntex-error",
+ "ntex-error 2.3.0",
  "ntex-http",
  "ntex-io",
  "ntex-net",
@@ -1148,7 +1137,7 @@ dependencies = [
  "libc",
  "log",
  "ntex-bytes",
- "ntex-error",
+ "ntex-error 2.3.0",
  "ntex-http",
  "ntex-io",
  "ntex-io-uring",
@@ -1209,7 +1198,7 @@ dependencies = [
  "futures-timer",
  "libc",
  "log",
- "ntex-error",
+ "ntex-error 2.3.0",
  "ntex-service",
  "oneshot",
  "parking_lot",
@@ -1260,7 +1249,7 @@ checksum = "8fa8909d6cef273298d192c51345e1124200f6a655336848659464e7950de4cf"
 dependencies = [
  "log",
  "ntex-bytes",
- "ntex-error",
+ "ntex-error 2.3.0",
  "ntex-io",
  "ntex-net",
  "ntex-service",
@@ -1279,7 +1268,7 @@ dependencies = [
  "futures-timer",
  "log",
  "ntex-bytes",
- "ntex-error",
+ "ntex-error 2.3.0",
  "ntex-rt",
  "ntex-service",
  "pin-project-lite",
@@ -1542,15 +1531,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b50b8869d9fc858ce7266cce0194bd74df58b9d0e3f6df3a9fc8eb470d95c09d"
 
 [[package]]
-name = "rustc_version"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
-dependencies = [
- "semver",
-]
-
-[[package]]
 name = "rustix"
 version = "1.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1592,12 +1572,6 @@ name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
-
-[[package]]
-name = "semver"
-version = "1.0.28"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a7852d02fc848982e0c167ef163aaff9cd91dc640ba85e263cb1ce46fae51cd"
 
 [[package]]
 name = "serde"
@@ -1933,12 +1907,6 @@ name = "unicode-ident"
 version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
-
-[[package]]
-name = "unicode-xid"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
 name = "urlencoding"
