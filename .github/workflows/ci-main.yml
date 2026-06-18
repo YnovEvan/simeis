@@ -11,7 +11,6 @@ on:
 jobs:
   setup-py:
     name: Setup PYTHON
-    needs: origin
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
@@ -37,7 +36,6 @@ jobs:
 
   setup-rust:
     name: Setup RUST
-    needs: origin
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
