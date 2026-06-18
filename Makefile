@@ -37,7 +37,7 @@ rust-build:
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## rust-build-heavy-testing: Compile le binaire avec les features heavy-testing
-rust-build-heavy-testing: rust-init
+rust-build-heavy-testing: 
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	cargo build --profile=heavy-testing --features=heavy-testing
 
@@ -46,7 +46,7 @@ rust-heavy-test: rust-build-heavy-testing
 	python3 tests/main.py
 
 ## rust-build-release: Compile le binaire en mode release
-rust-build-release: rust-init
+rust-build-release: 
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
 
@@ -71,12 +71,12 @@ rust-fmt:
 	cargo fmt --all -- --check
 
 # audit: Vérifie les vulnérabilités dans les dépendances
-rust-audit: rust-init
+rust-audit: 
 	@echo "${HELP_COLOR}==> Audit du code...${RESET}"
 	cargo audit
 
 # udeps: Vérifie les dépendances non utilisées
-rust-udeps: rust-init
+rust-udeps:
 	@echo "${HELP_COLOR}==> Verification des dependances...${RESET}"
 	cargo udeps
 

@@ -63,11 +63,26 @@ jobs:
 
   quality:
     name: Quality
-    needs: [origin]
+    needs: [origin, setup]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Formatage
         run: make fmt
@@ -76,43 +91,88 @@ jobs:
         run: make lint
 
       - name: Audit
-        run: make audit
+        run: make rust-audit
 
       - name: Udeps
         run: make udeps
 
   tests:
     name: Tests
-    needs: [origin]
+    needs: [origin, setup]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
       - name: Lancement des tests
-        run: make test-release
+        run: make rust-test-release
 
       - name: Lancement des tests avec heavy-testing
         run: make test-heavy-testing
 
   python-property-test-heavy:
     name: Tests property-based (lourd)
-    needs: [origin]
+    needs: [origin, setup]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Tests property-based (mode lourd)
         run: make python-property-test-heavy
 
   python-functional-test:
     name: Tests functionnal
-    needs: [origin]
+    needs: [origin, setup]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Tests functionnal
         run: make python-functional-test
@@ -124,6 +184,21 @@ jobs:
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Compilation
         run: make build-release
