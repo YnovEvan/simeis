@@ -29,5 +29,11 @@ jobs:
       - name: Log de la version de Rust installée (vérification)
         run: rustc --version
 
+      # Le Cargo.lock du repo peut être en version 4 (Rust >= 1.78), incompatible
+      # avec les anciennes versions de la matrice (1.75.0, 1.80.0).
+      # On le supprime pour laisser Cargo le régénérer dans le format adapté.
+      - name: Suppression du Cargo.lock pour compatibilité cross-version
+        run: rm -f Cargo.lock
+
       - name: Build release
         run: cargo build --release --verbose
