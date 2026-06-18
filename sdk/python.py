@@ -250,10 +250,12 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
 
     def return_station_and_unload_all(self, sta, ship_id):
         """Return ship to station and unload all cargo."""
+        self.wait_until_ship_idle(ship_id)
         ship = self.get(f"/ship/{ship_id}")
         station = self.get(f"/station/{sta}")
         if ship["position"] != station["position"]:
-            self.travel(ship["id"], station["position"])
+            self.travel(ship["id"], station["position"])    
+            
         return self.post(f"/ship/{ship_id}/unload/{sta}/all")
 
     def get_station_resources(self, sta):

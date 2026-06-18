@@ -9,15 +9,39 @@ on:
       - "main"
 
 jobs:
-  quality:
-    name: Quality
+  setup-rust:
+    name: Setup RUST
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de rust
         run: make rust-init
+
+  quality:
+    needs: setup-rust
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
 
       - name: Formatage
         run: make rust-fmt
@@ -26,27 +50,53 @@ jobs:
         run: make rust-lint
 
   tests:
+    needs: setup-rust
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
-        run: make rust-init
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Lancement des tests
         run: make rust-test
 
   build:
+    needs: setup-rust
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Installation de rust
-        run: make rust-init
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Compilation du projet
         run: make rust-build

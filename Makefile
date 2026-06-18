@@ -29,14 +29,15 @@ rust-init:
 	cargo install --locked typst-cli
 	rustup component add rustfmt
 	rustup component add clippy
-
+	cargo install --locked cargo-tarpaulin
+	
 ## rust-build: Compile le binaire pour l'OS actuel
-rust-build: rust-init
+rust-build:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## rust-build-heavy-testing: Compile le binaire avec les features heavy-testing
-rust-build-heavy-testing: rust-init
+rust-build-heavy-testing: 
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	cargo build --profile=heavy-testing --features=heavy-testing
 
@@ -45,7 +46,7 @@ rust-heavy-test: rust-build-heavy-testing
 	python3 tests/main.py
 
 ## rust-build-release: Compile le binaire en mode release
-rust-build-release: rust-init
+rust-build-release: 
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
 
@@ -70,12 +71,12 @@ rust-fmt:
 	cargo fmt --all -- --check
 
 # audit: Vérifie les vulnérabilités dans les dépendances
-rust-audit: rust-init
+rust-audit: 
 	@echo "${HELP_COLOR}==> Audit du code...${RESET}"
 	cargo audit
 
 # udeps: Vérifie les dépendances non utilisées
-rust-udeps: rust-init
+rust-udeps:
 	@echo "${HELP_COLOR}==> Verification des dependances...${RESET}"
 	cargo udeps
 
@@ -103,8 +104,7 @@ python-init:
 	python -m venv test_env
 	ls test_env
 	${VENV}/python -m pip install --upgrade pip
-	${VENV}/pip install --upgrade pylint
-	${VENV}/pip install --upgrade black
+	${VENV}/pip install -r requirements.txt -v
 
 ## python-lint : Lint le code python avec clippy et traite les warnings comme des erreurs
 python-lint:
@@ -127,7 +127,7 @@ python-property-test-heavy:
 	${VENV}/python tests/propertybased.py --time 120
 
 # python-functional-test: Lance les tests fonctionnels
-python-functional-test: rust-build python-init
+python-functional-test: rust-build
 	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API Rust...${RESET}"
 	@$(BINARY_PATH) & echo $$! > $(PID_FILE)
 	@echo "${HELP_COLOR}==> Attente que l'API réponde sur le port $(PORT)...${RESET}"
@@ -150,8 +150,9 @@ lint: rust-lint python-lint
 
 fmt: rust-fmt python-fmt
 
-test-init: 
-	cargo install --locked cargo-tarpaulin
+# Installe cargo tarpaulin si pas installé
+rust-test-init:
+	@which cargo-tarpaulin > /dev/null 2>&1 || cargo install --locked cargo-tarpaulin
 
 test-coverage: 
 	cargo tarpaulin
