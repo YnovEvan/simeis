@@ -43,4 +43,4 @@ jobs:
         run: rustc --version
 
       - name: Build release
-        run: cargo build --release --verbose
+        run: cargo build --release --verbose --locked
