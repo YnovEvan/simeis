@@ -15,9 +15,9 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        # 1.75.0 et 1.80.0 exclus : la dépendance cpufeatures v0.3.0 utilise
-        # l'edition2024 de Rust, stabilisée uniquement à partir de 1.85.0.
-        rust: ["1.85.0", "1.88.0"]
+        # 1.75.0, 1.80.0, 1.85.0 exclus : ntex (même en v3.7.0) impose rustc >= 1.88.
+        # Le MSRV effectif du projet est donc 1.88.0.
+        rust: ["1.88.0"]
 
     steps:
       - name: Récupération du code
