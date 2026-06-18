@@ -15,7 +15,9 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        rust: ["1.75.0", "1.80.0", "1.85.0", "1.88.0"]
+        # 1.75.0 et 1.80.0 exclus : la dépendance cpufeatures v0.3.0 utilise
+        # l'edition2024 de Rust, stabilisée uniquement à partir de 1.85.0.
+        rust: ["1.85.0", "1.88.0"]
 
     steps:
       - name: Récupération du code
@@ -28,13 +30,6 @@ jobs:
 
       - name: Log de la version de Rust installée (vérification)
         run: rustc --version
-
-      # Le Cargo.lock généré par Rust >= 1.78 utilise le format version 4,
-      # illisible par les anciennes versions de Cargo (< 1.78).
-      # On le rétrograde en version 3 (rétrocompatible) pour que tous les jobs
-      # de la matrice puissent lire les versions exactes pinchées.
-      - name: Rétrogradation du Cargo.lock v4 → v3 pour compatibilité cross-version
-        run: sed -i 's/^version = 4$/version = 3/' Cargo.lock
 
       - name: Build release
         run: cargo build --release --verbose
