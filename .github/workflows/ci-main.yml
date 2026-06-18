@@ -62,13 +62,8 @@ jobs:
         name: Installation de rust
         run: make rust-init
 
-  setup: # Setup vérifie le cache et fait les installations nécessaires aux besoins.
-    name: Setup
-    runs-on: ubuntu-latest
-    needs: [setup-py, setup-rust]
-
   quality:
-    needs: setup
+    needs: setup-rust
     name: Quality
     runs-on: ubuntu-latest
     steps:
@@ -82,18 +77,33 @@ jobs:
         run: make rust-lint
 
   tests:
-    needs: setup
+    needs: setup-rust
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
       - name: Lancement des tests
         run: make rust-test
 
   build:
-    needs: setup
+    needs: setup-rust
     name: Build
     runs-on: ubuntu-latest
     steps:
