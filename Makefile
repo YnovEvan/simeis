@@ -30,7 +30,8 @@ rust-init:
 	rustup component add rustfmt
 	rustup component add clippy
 	cargo install --locked cargo-tarpaulin
-	
+	cargo install --locked cargo-audit
+
 ## rust-build: Compile le binaire pour l'OS actuel
 rust-build:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
@@ -43,7 +44,7 @@ rust-build-heavy-testing:
 
 rust-heavy-test: rust-build-heavy-testing
 	@echo "${HELP_COLOR}==> Lancement des tests avec heavy-testing...${RESET}"
-	python3 tests/main.py
+	python3 -m tests.main
 
 ## rust-build-release: Compile le binaire en mode release
 rust-build-release: 
