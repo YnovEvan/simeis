@@ -1,5 +1,5 @@
 Package: simeis
-Version: 1.0.0-1
+Version: VERSION-1
 Section: games
 Priority: optional
 Architecture: amd64
