@@ -1,0 +1,8 @@
+Package: simeis
+Version: 1.0.0-1
+Section: games
+Priority: optional
+Architecture: amd64
+Depends: cmatrix
+Maintainer: ferron.evan@ynov.com
+Description: Simeis est un jeu par API (inspiré de SpaceTraders), dont le but est de faire fructifier votre empire économique dans toute la galaxie
