@@ -58,7 +58,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -85,10 +85,24 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
             ${{ runner.os }}-
 
       - name: Formatage
@@ -101,7 +115,7 @@ jobs:
         run: make rust-audit
 
       - name: Udeps
-        run: make udeps
+        run: make rust-udeps
 
   tests:
     name: Tests
@@ -120,17 +134,31 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
             ${{ runner.os }}-
 
       - name: Lancement des tests
         run: make rust-test-release
 
       - name: Lancement des tests avec heavy-testing
-        run: make test-heavy-testing
+        run: make rust-heavy-test
 
   python-property-test-heavy:
     name: Tests property-based (lourd)
@@ -149,7 +177,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -189,7 +217,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -229,14 +257,14 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
       - name: Compilation
-        run: make build-release
+        run: make rust-build-release
 
       - name: Optimisation executable
         run: |

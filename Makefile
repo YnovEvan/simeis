@@ -30,7 +30,10 @@ rust-init:
 	rustup component add rustfmt
 	rustup component add clippy
 	cargo install --locked cargo-tarpaulin
-	
+	cargo install --locked cargo-audit
+	rustup toolchain install nightly
+	cargo +nightly install --locked cargo-udeps
+
 ## rust-build: Compile le binaire pour l'OS actuel
 rust-build:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
@@ -42,8 +45,12 @@ rust-build-heavy-testing:
 	cargo build --profile=heavy-testing --features=heavy-testing
 
 rust-heavy-test: rust-build-heavy-testing
+	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API (heavy-testing)...${RESET}"
+	@target/heavy-testing/simeis-server & echo $$! > $(PID_FILE)
+	@sleep 3
 	@echo "${HELP_COLOR}==> Lancement des tests avec heavy-testing...${RESET}"
-	python3 tests/main.py
+	python3 -m tests.main || ($(MAKE) stop-api; exit 1)
+	@$(MAKE) stop-api
 
 ## rust-build-release: Compile le binaire en mode release
 rust-build-release: 
@@ -78,7 +85,7 @@ rust-audit:
 # udeps: Vérifie les dépendances non utilisées
 rust-udeps:
 	@echo "${HELP_COLOR}==> Verification des dependances...${RESET}"
-	cargo udeps
+	cargo +nightly udeps
 
 
 ## rust-start: Compile et lance l'application
