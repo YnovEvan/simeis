@@ -31,6 +31,8 @@ rust-init:
 	rustup component add clippy
 	cargo install --locked cargo-tarpaulin
 	cargo install --locked cargo-audit
+	rustup toolchain install nightly
+	cargo +nightly install --locked cargo-udeps
 
 ## rust-build: Compile le binaire pour l'OS actuel
 rust-build:
@@ -79,7 +81,7 @@ rust-audit:
 # udeps: Vérifie les dépendances non utilisées
 rust-udeps:
 	@echo "${HELP_COLOR}==> Verification des dependances...${RESET}"
-	cargo udeps
+	cargo +nightly udeps
 
 
 ## rust-start: Compile et lance l'application

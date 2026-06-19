@@ -115,7 +115,7 @@ jobs:
         run: make rust-audit
 
       - name: Udeps
-        run: make udeps
+        run: make rust-udeps
 
   tests:
     name: Tests
