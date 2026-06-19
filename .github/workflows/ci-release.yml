@@ -264,7 +264,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Compilation
-        run: make build-release
+        run: make rust-build-release
 
       - name: Optimisation executable
         run: |
