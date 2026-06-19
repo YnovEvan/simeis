@@ -58,7 +58,7 @@ rust-build-release:
 	cargo build --release --verbose
 
 # rust-test: Compile et lance les tests
-rust-test: rust-build
+rust-test:
 	@echo "${HELP_COLOR}==> Lancement des tests...${RESET}"
 	cargo test --verbose
 
@@ -89,7 +89,7 @@ rust-udeps:
 
 
 ## rust-start: Compile et lance l'application
-rust-start: rust-build
+rust-start: 
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
 
@@ -134,7 +134,7 @@ python-property-test-heavy:
 	${VENV}/python tests/propertybased.py --time 120
 
 # python-functional-test: Lance les tests fonctionnels
-python-functional-test: rust-build
+python-functional-test: 
 	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API Rust...${RESET}"
 	@$(BINARY_PATH) & echo $$! > $(PID_FILE)
 	@echo "${HELP_COLOR}==> Attente que l'API réponde sur le port $(PORT)...${RESET}"
