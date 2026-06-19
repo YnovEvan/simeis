@@ -2,4 +2,4 @@
 
 Jeu par API
 
-test trigger ci release - 000
+test trigger ci release - 001
