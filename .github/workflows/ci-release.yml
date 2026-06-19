@@ -91,6 +91,20 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+
       - name: Formatage
         run: make fmt
 
@@ -126,11 +140,25 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
+      - name: Cache python install
+        id: cache-python
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./test_env/
+          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.cache-name }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+
       - name: Lancement des tests
         run: make rust-test-release
 
       - name: Lancement des tests avec heavy-testing
-        run: make test-heavy-testing
+        run: make rust-heavy-test
 
   python-property-test-heavy:
     name: Tests property-based (lourd)
