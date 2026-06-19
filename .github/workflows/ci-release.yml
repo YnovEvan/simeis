@@ -18,6 +18,7 @@ jobs:
           fi
 
   setup-py:
+    needs: origin
     name: Setup PYTHON
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +44,7 @@ jobs:
         run: make python-init
 
   setup-rust:
+    needs: origin
     name: Setup RUST
     runs-on: ubuntu-latest
     steps:
