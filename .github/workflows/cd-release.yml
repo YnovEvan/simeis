@@ -1,0 +1,103 @@
+name: CD Release
+
+on:
+  pull_request:
+    branches:
+      - "release/*"
+    types:
+      - closed # Se déclenche à la fermeture de la PR
+
+jobs:
+  release:
+    # On ne fait rien si la PR a été fermée sans être mergée
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Nécessaire pour créer/modifier une release GitHub
+      pull-requests: read # Nécessaire pour lister les PRs via gh
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Historique complet requis pour gh pr list
+
+      - name: Extraire la version depuis le nom de la branche
+        id: version
+        run: |
+          BRANCH="${{ github.base_ref }}"
+          VERSION="${BRANCH#release/}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      # Liste toutes les PR mergées dans cette branche release et les classe
+      # par catégorie selon leur branche source (feature/*, bug/*, autre)
+      - name: Générer le changelog
+        id: changelog
+        run: |
+          PRS=$(gh pr list \
+            --base "${{ github.base_ref }}" \
+            --state merged \
+            --json title,url,headRefName \
+            --jq '.[]')
+
+          FEATURES=""
+          BUGFIX=""
+          AUTRE=""
+
+          while IFS= read -r pr; do
+            TITLE=$(echo "$pr" | jq -r '.title')
+            URL=$(echo "$pr" | jq -r '.url')
+            HEAD=$(echo "$pr" | jq -r '.headRefName')
+            LINE="- [$TITLE]($URL)"
+
+            if [[ "$HEAD" == feature/* ]]; then
+              FEATURES="$FEATURES\n$LINE"
+            elif [[ "$HEAD" == bug/* ]]; then
+              BUGFIX="$BUGFIX\n$LINE"
+            else
+              AUTRE="$AUTRE\n$LINE"
+            fi
+          done <<< "$PRS"
+
+          BODY="## Changelog\n"
+          [ -n "$FEATURES" ] && BODY="$BODY\n### Features\n$FEATURES"
+          [ -n "$BUGFIX"   ] && BODY="$BODY\n### Bugfix\n$BUGFIX"
+          [ -n "$AUTRE"    ] && BODY="$BODY\n### Autre\n$AUTRE"
+
+          # On passe par GITHUB_ENV avec délimiteur EOF pour préserver les sauts de ligne
+          {
+            echo 'CHANGELOG<<EOF'
+            echo -e "$BODY"
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+
+      - name: Installer Rust
+        run: make rust-init
+
+      - name: Compiler en mode release
+        run: make rust-build-release
+
+      - name: Compiler la documentation PDF
+        run: make rust-docu
+
+      # Crée la release si elle n'existe pas, la met à jour si elle existe déjà.
+      # clear_attachments: true remplace les artefacts existants à chaque run, pour éviter les doublons.
+      - name: Créer ou mettre à jour la release GitHub
+        id: create_release
+        uses: mini-bomba/create-github-release@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: ${{ env.CHANGELOG }}
+          clear_attachments: true
+          files: |
+            ./target/release/simeis-server
+            ./doc/manuel.pdf
+            ./doc/swagger.json
+            ./doc/swagger-ui.html
