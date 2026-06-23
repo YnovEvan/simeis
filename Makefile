@@ -24,6 +24,7 @@ help:
 
 ## rust-init : Installation de rust et des composants nécessaires (clippy, rustfmt)
 rust-init:
+	cargo clean
 	@echo "${HELP_COLOR}==> Installation de rust en cours...${RESET}"
 	rustup update stable && rustup default stable
 	cargo install --locked typst-cli
