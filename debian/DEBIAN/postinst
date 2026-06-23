@@ -1,0 +1,9 @@
+set -e
+# Créer l'utilisateur système (sans login, sans home)
+id simeis &>/dev/null || useradd --system --no-create-home --shell /usr/sbin/nologin simeis
+# Donner les bons droits au binaire
+chmod 755 /usr/bin/simeis-server
+chown simeis:simeis /usr/bin/simeis-server
+# Activer et démarrer le service
+systemctl enable simeis.service
+systemctl start simeis.service

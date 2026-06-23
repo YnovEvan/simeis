@@ -7,3 +7,4 @@ result
 scores.json
 __pycache__
 test_env
+*.deb

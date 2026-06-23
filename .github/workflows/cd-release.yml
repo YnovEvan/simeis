@@ -85,6 +85,14 @@ jobs:
       - name: Compiler la documentation PDF
         run: make rust-docu
 
+      - name: Création du package debian
+        run: |
+          cp ./target/release/simeis-server debian/usr/bin/
+          sed -i 's/VERSION/${{ steps.version.outputs.tag }}/g'
+
+      - name: Compilation en .deb
+        run: dpkg-deb --build ./debian .
+
       # Crée la release si elle n'existe pas, la met à jour si elle existe déjà.
       # clear_attachments: true remplace les artefacts existants à chaque run, pour éviter les doublons.
       - name: Créer ou mettre à jour la release GitHub
@@ -97,7 +105,7 @@ jobs:
           body: ${{ env.CHANGELOG }}
           clear_attachments: true
           files: |
-            ./target/release/simeis-server
             ./doc/manuel.pdf
             ./doc/swagger.json
             ./doc/swagger-ui.html
+            ./simeis_${{ steps.version.outputs.tag }}-1_amd64.deb
