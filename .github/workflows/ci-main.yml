@@ -25,7 +25,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
