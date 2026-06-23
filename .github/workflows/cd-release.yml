@@ -135,7 +135,7 @@ jobs:
           cp ./target/release/simeis-server ./debian/usr/bin/
 
           # Mise à jour de la version dans le control
-          sed -i 's/VERSION/${steps.version.outputs.version}/g' ./debian/DEBIAN/control
+          sed -i 's/VERSION/${{steps.version.outputs.version}}/g' ./debian/DEBIAN/control
 
       - name: Compilation en .deb
         run: dpkg-deb --build ./debian .
