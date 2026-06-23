@@ -108,3 +108,64 @@ def scenario2():
         status = player.get_player_status()
         print(f"Argent avant : {initial_money}, Argent après : {status['money']}")
         print("✓ Extraction et vente réussies")
+
+
+def scenario3():
+    """Scénario: Voyage, ravitaillement et réparation d'un vaisseau."""
+    print("=== Scénario 3 : Maintenance après voyage ===")
+    player = SimeisSDK("test32", "localhost", 8080)
+
+    status = player.get_player_status()
+    station_id = status["stations"][0]
+
+    print("On achète un vaisseau")
+    ship_id = get_less_expensive_ship(player, station_id, status["money"])
+    player.buy_ship(station_id, ship_id)
+
+    status = player.get_player_status()
+    ship = status["ships"][0]["id"]
+
+    print("On embauche et assigne un pilote et un trader")
+    pilot = player.hire_crew(station_id, "Pilot")
+    trader = player.hire_crew(station_id, "trader")
+    player.assign_crew_to_ship(station_id, ship, pilot["id"], "pilot")
+    player.assign_trader_to_station(station_id, trader["id"])
+
+    print("On récupère le niveau de carburant initial")
+    ship_status = player.get_ship_status(ship)
+    initial_fuel = ship_status["fuel_tank"]
+    print(f"Carburant initial : {initial_fuel}")
+
+    print("On effectue un voyage vers une planète proche")
+    planets = player.scan_planets(station_id)
+    assert len(planets) > 0, "Aucune planète détectée"
+    player.travel(ship, planets[0]["position"])
+
+    print("On vérifie que le carburant a diminué après le voyage")
+    ship_status = player.get_ship_status(ship)
+    assert ship_status["fuel_tank"] < initial_fuel, (
+        "Le carburant n'a pas diminué après le voyage"
+    )
+    print(f"Carburant après voyage : {ship_status['fuel_tank']}")
+
+    print("On retourne à la station")
+    station_status = player.get_station_status(station_id)
+    player.travel(ship, station_status["position"])
+
+    print("On achète du carburant et on ravitaille le vaisseau")
+    fuel_before_refuel = player.get_ship_status(ship)["fuel_tank"]
+    player.buy_fuel_for_refuel(station_id, ship)
+    player.refuel_ship(station_id, ship)
+
+    print("On vérifie que le vaisseau est bien ravitaillé")
+    ship_status = player.get_ship_status(ship)
+    assert ship_status["fuel_tank"] > fuel_before_refuel, (
+        "Le ravitaillement n'a pas fonctionné"
+    )
+    print(f"Carburant après ravitaillement : {ship_status['fuel_tank']}")
+
+    print("On achète de la coque et on répare le vaisseau si nécessaire")
+    player.buy_hull_for_repair(station_id, ship)
+    player.repair_ship(station_id, ship)
+
+    print("✓ Maintenance effectuée avec succès")
