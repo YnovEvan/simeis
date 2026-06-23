@@ -8,7 +8,35 @@ on:
       - closed # Se déclenche à la fermeture de la PR
 
 jobs:
+  setup-rust:
+    name: Setup RUST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de rust
+        run: |
+          make rust-init
+
   release:
+    needs: setup-rust
     # On ne fait rien si la PR a été fermée sans être mergée
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
@@ -25,6 +53,21 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Historique complet requis pour gh pr list
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
 
       - name: Extraire la version depuis le nom de la branche
         id: version
@@ -75,33 +118,6 @@ jobs:
             echo -e "$BODY"
             echo 'EOF'
           } >> "$GITHUB_ENV"
-
-  setup-rust:
-    name: Setup RUST
-    runs-on: ubuntu-latest
-    steps:
-      - name: Récupération du code
-        uses: actions/checkout@v6
-
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
-
-      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
-        name: Installation de rust
-        run: |
-          make rust-init
 
       - name: Compiler en mode release
         run: make rust-build-release
