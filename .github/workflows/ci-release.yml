@@ -68,7 +68,9 @@ jobs:
 
       - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
         name: Installation de rust
-        run: make rust-init
+        run: |
+          make rust-init
+          make rust-build
 
   quality:
     name: Quality

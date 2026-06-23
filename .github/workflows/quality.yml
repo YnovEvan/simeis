@@ -50,7 +50,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -58,7 +58,9 @@ jobs:
 
       - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
         name: Installation de rust
-        run: make rust-init
+        run: |
+          make rust-init
+          make rust-build
 
   rust-quality:
     name: Rust quality
@@ -77,7 +79,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -162,7 +164,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
@@ -207,7 +209,7 @@ jobs:
           path: |
             ./target/
             ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
           restore-keys: |
             ${{ runner.os }}-rust-${{ env.cache-name }}-
             ${{ runner.os }}-rust-
