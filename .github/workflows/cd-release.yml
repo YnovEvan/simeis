@@ -111,8 +111,9 @@ jobs:
 
       - name: Création du package debian
         run: |
+          mkdir -p ./debian/usr/bin/ # Pour créer le fichier qui est ignoré par git car vide
           cp ./target/release/simeis-server ./debian/usr/bin/
-          sed -i 's/VERSION/${{ steps.version.outputs.tag }}/g'
+          sed -i 's/VERSION/${{ steps.version.outputs.tag }}/g' ./debian/DEBIAN/control
 
       - name: Compilation en .deb
         run: dpkg-deb --build ./debian .
