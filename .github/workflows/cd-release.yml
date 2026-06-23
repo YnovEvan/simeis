@@ -76,8 +76,33 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_ENV"
 
-      - name: Installer Rust
-        run: make rust-init
+  setup-rust:
+    needs: origin
+    name: Setup RUST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de rust
+        run: |
+          make rust-init
 
       - name: Compiler en mode release
         run: make rust-build-release
@@ -87,7 +112,7 @@ jobs:
 
       - name: Création du package debian
         run: |
-          cp ./target/release/simeis-server debian/usr/bin/
+          cp ./target/release/simeis-server ./debian/usr/bin/
           sed -i 's/VERSION/${{ steps.version.outputs.tag }}/g'
 
       - name: Compilation en .deb
