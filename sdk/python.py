@@ -254,8 +254,8 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
         ship = self.get(f"/ship/{ship_id}")
         station = self.get(f"/station/{sta}")
         if ship["position"] != station["position"]:
-            self.travel(ship["id"], station["position"])    
-            
+            self.travel(ship["id"], station["position"])
+
         return self.post(f"/ship/{ship_id}/unload/{sta}/all")
 
     def get_station_resources(self, sta):

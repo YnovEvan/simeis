@@ -143,9 +143,9 @@ def scenario3():
 
     print("On vérifie que le carburant a diminué après le voyage")
     ship_status = player.get_ship_status(ship)
-    assert ship_status["fuel_tank"] < initial_fuel, (
-        "Le carburant n'a pas diminué après le voyage"
-    )
+    assert (
+        ship_status["fuel_tank"] < initial_fuel
+    ), "Le carburant n'a pas diminué après le voyage"
     print(f"Carburant après voyage : {ship_status['fuel_tank']}")
 
     print("On retourne à la station")
@@ -159,9 +159,9 @@ def scenario3():
 
     print("On vérifie que le vaisseau est bien ravitaillé")
     ship_status = player.get_ship_status(ship)
-    assert ship_status["fuel_tank"] > fuel_before_refuel, (
-        "Le ravitaillement n'a pas fonctionné"
-    )
+    assert (
+        ship_status["fuel_tank"] > fuel_before_refuel
+    ), "Le ravitaillement n'a pas fonctionné"
     print(f"Carburant après ravitaillement : {ship_status['fuel_tank']}")
 
     print("On achète de la coque et on répare le vaisseau si nécessaire")

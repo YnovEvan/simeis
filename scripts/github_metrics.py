@@ -1,3 +1,5 @@
+"""Metriques GitHub pour le depot Simeis (issues + labels)."""
+
 import io
 import json
 import os
@@ -47,7 +49,7 @@ def fetch_issues():
         if not batch:
             break
 
-        # Ajout des issues non-pull request à la liste
+        # Ajout des issues sans les pull requests à la liste
         all_issues.extend(i for i in batch if "pull_request" not in i)
         page += 1
 
@@ -102,8 +104,11 @@ def print_metrics(metrics):
 
 
 def main():
+    """Point d'entrée du script."""
     if not TOKEN:
-        print("Utilisez GITHUB_TOKEN pour augmenter la limite de taux")
+        print(
+            "Utilisez GITHUB_TOKEN pour augmenter la limite de taux (60 -> 5000 req/h)"
+        )
 
     print(f"Récupération des issues de {REPO}...")
     issues = fetch_issues()
