@@ -8,7 +8,7 @@ from sdk import SimeisSDK
 def scenario1():
     """Scénario: Création d'un joueur et achat d'un vaisseau."""
     print("On créer un nouveau joueur")
-    player = SimeisSDK("test1", "localhost", 8080)
+    player = SimeisSDK("test1", "localhost", 8081)
 
     status = player.get_player_status()
     print(status)
@@ -45,7 +45,7 @@ def get_less_expensive_ship(player: SimeisSDK, station_id, money):
 def scenario2():
     """Scénario: Extraire des ressources et les vendre"""
     print("=== Scénario 2 : Extraction et commerce ===")
-    player = SimeisSDK("test2", "localhost", 8080)
+    player = SimeisSDK("test2", "localhost", 8081)
 
     status = player.get_player_status()
     station_id = status["stations"][0]
