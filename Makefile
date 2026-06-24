@@ -2,7 +2,7 @@
 HELP_COLOR=\033[36m
 RESET=\033[0m
 
-PORT=8081# Change par le port réel de ton API
+PORT=8081
 PID_FILE=api.pid
 BINARY_PATH=target/debug/simeis-server
 MIN_COVERAGE=5
