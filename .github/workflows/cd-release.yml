@@ -183,6 +183,8 @@ jobs:
           # Mise à jour du service
           ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- sudo dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb 
 
+          sleep 5
+
           # Vérification de version
           V=$(ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- curl -s http://0.0.0.0:8081/version)
           if echo "$V" | grep -q "$VERSION"
