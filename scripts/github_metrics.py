@@ -11,6 +11,7 @@ from collections import Counter
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 REPO = "evanferron/simeis"
+# Token optionnel au cas où on dépasse la limite de requêtes par heure
 TOKEN = os.environ.get("GITHUB_TOKEN")
 
 
@@ -20,12 +21,12 @@ def fetch_issues():
     page = 1
     headers = {
         "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
+        "X-GitHub-Api-Version": "2026-03-10",
     }
     if TOKEN:
         headers["Authorization"] = f"Bearer {TOKEN}"
 
-    # Récupération des issues (paginées)
+    # Récupération des issues - 100 max par page (paginées)
     while True:
         url = f"https://api.github.com/repos/{REPO}/issues?state=all&per_page=100&page={page}"
         req = urllib.request.Request(url, headers=headers)
@@ -50,6 +51,7 @@ def fetch_issues():
             break
 
         # Ajout des issues sans les pull requests à la liste
+        # L'api de GitHub retourne les issues avec les pull requests inclues, on les filtre ici
         all_issues.extend(i for i in batch if "pull_request" not in i)
         page += 1
 
