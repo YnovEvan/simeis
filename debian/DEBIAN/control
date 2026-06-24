@@ -4,5 +4,7 @@ Section: games
 Priority: optional
 Architecture: amd64
 Depends: cmatrix
+Conflicts: simeis
+Replaces: simeis
 Maintainer: ferron.evan@ynov.com
 Description: Simeis est un jeu par API (inspiré de SpaceTraders), dont le but est de faire fructifier votre empire économique dans toute la galaxie
