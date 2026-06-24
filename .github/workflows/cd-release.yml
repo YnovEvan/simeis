@@ -143,7 +143,7 @@ jobs:
 
           # Mise à jour du man
           date=$(date '+%Y-%m-%d')
-          sed -i "s/VERSION/${{steps.version.outputs.version}}/g" ./debian/user/man/man1/simeis.1
+          sed -i "s/VERSION/${{steps.version.outputs.version}}/g" ./debian/usr/man/man1/simeis.1
           sed -i "s/DATE/$date/g" ./debian/usr/man/man1/simeis.1
 
       - name: Compilation en .deb
