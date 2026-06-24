@@ -177,13 +177,13 @@ jobs:
         run: |
 
           # Envoi du fichier au serveur
-          scp -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student
+          scp -i  ~/.ssh/id_ed25519 -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student
 
           # Mise à jour du service
-          ssh -p 22222 eva2@78.123.114.124 --  sudo dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb 
+          ssh -i  ~/.ssh/id_ed25519 -p 22222 eva2@78.123.114.124 --  sudo dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb 
 
           # Vérification de version
-          V = $(ssh -p 22222 eva2@78.123.114.124 -- curl -s http://0.0.0.0:8081/version)
+          V = $(ssh -i  ~/.ssh/id_ed25519 -p 22222 eva2@78.123.114.124 -- curl -s http://0.0.0.0:8081/version)
           if echo "$V" | grep -q "$VERSION"
           then 
             echo "ok"
