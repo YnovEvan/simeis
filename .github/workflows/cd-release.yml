@@ -169,9 +169,10 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          cat << EOF > ~/.ssh/id_ed25519
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519 -p 22222 78.123.114.124 >> ~/.ssh/known_hosts
 
       - name: Déploiement
         run: |
