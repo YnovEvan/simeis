@@ -113,7 +113,7 @@ def scenario2():
 def scenario3():
     """Scénario: Voyage, ravitaillement et réparation d'un vaisseau."""
     print("=== Scénario 3 : Maintenance après voyage ===")
-    player = SimeisSDK("test32", "localhost", 8080)
+    player = SimeisSDK("test32", "localhost", 8081)
 
     status = player.get_player_status()
     station_id = status["stations"][0]
