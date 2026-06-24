@@ -52,9 +52,9 @@ def addition():
     z = random.randrange(0, 10000)
 
     assert x + y == y + x, f"Commutativité échouée: {x} + {y} != {y} + {x}"
-    assert (x + y) + z == x + (y + z), (
-        f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
-    )
+    assert (x + y) + z == x + (
+        y + z
+    ), f"Association échouée: ({x}+{y})+{z} != {x}+({y}+{z})"
     assert x + 0 == x, f"Identité échoué: {x} + 0 != {x}"
     assert x + y >= x, f"Somme doit être >= au premier opérateur: {x} + {y} < {x}"
     assert x + y >= y, f"Somme doit être >= au second opérateur: {x} + {y} < {y}"
@@ -76,14 +76,14 @@ def distance():
     dist_bc = get_dist(b, c)
 
     assert dist_ab >= 0, f"Distance non-négative échouée: dist(a,b)={dist_ab}"
-    assert dist_ab == get_dist(b, a), (
-        f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={get_dist(b, a)}"
-    )
+    assert dist_ab == get_dist(
+        b, a
+    ), f"Symétrie échouée: dist(a,b)={dist_ab} != dist(b,a)={get_dist(b, a)}"
     assert get_dist(a, a) == 0, "Distance d'un point à lui-même doit être 0"
     triangle_sum = dist_ab + dist_bc
-    assert dist_ac <= triangle_sum + 1e-9, (
-        f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > {triangle_sum}"
-    )
+    assert (
+        dist_ac <= triangle_sum + 1e-9
+    ), f"Inégalité triangulaire échouée: dist(a,c)={dist_ac} > {triangle_sum}"
 
 
 create_property_based_test(addition, time_test=TIME_TEST)

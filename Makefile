@@ -129,6 +129,11 @@ python-property-test:
 	@echo "${HELP_COLOR}==> Lancement des tests property-based (rapide)...${RESET}"
 	${VENV}/python tests/propertybased.py --time 3
 
+## github-metrics: Affiche les métriques GitHub (issues + labels) du dépôt
+github-metrics:
+	@echo "${HELP_COLOR}==> Génération des métriques GitHub...${RESET}"
+	${VENV}/python scripts/github_metrics.py
+
 ## python-property-test-heavy: Lance les tests property-based en mode lourd (120s par propriété)
 python-property-test-heavy:
 	@echo "${HELP_COLOR}==> Lancement des tests property-based (lourd)...${RESET}"
