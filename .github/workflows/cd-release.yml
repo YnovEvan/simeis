@@ -164,4 +164,4 @@ jobs:
             ./doc/manuel.pdf
             ./doc/swagger.json
             ./doc/swagger-ui.html
-            ./simeis_${{ steps.version.outputs.version }}-1_amd64.deb
+            ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb
