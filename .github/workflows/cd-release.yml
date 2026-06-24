@@ -171,7 +171,7 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 22222 78.123.114.124 >> ~/.ssh/known_hosts
+          ssh-keyscan -t ed25519 -p 22222 78.123.114.124 >> ~/.ssh/known_hosts
 
       - name: Déploiement
         run: |
