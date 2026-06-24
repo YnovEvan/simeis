@@ -177,6 +177,10 @@ jobs:
       - name: Déploiement
         run: |
 
+          cat ~/.ssh/id_ed25519
+
+          ls -lah
+
           # Envoi du fichier au serveur
           scp -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student
 
