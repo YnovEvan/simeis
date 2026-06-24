@@ -34,6 +34,7 @@ rust-init:
 	cargo install --locked cargo-audit
 	rustup toolchain install nightly
 	cargo +nightly install --locked cargo-udeps
+	cargo install cargo-edit --locked
 
 ## rust-build: Compile le binaire pour l'OS actuel
 rust-build:
