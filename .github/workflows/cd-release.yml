@@ -78,7 +78,7 @@ jobs:
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Mise à jour de la version
-        run: cargo set-version ${{ steps.version.outputs.version }}
+        run: cargo set-version ${{ steps.version.outputs.version }} ## Mets à jour dans simeis server & simeis client
 
       # Liste toutes les PR mergées dans cette branche release et les classe
       # par catégorie selon leur branche source (feature/*, bug/*, autre)
