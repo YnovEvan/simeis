@@ -85,6 +85,9 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
+      - name: Check
+        run: make rust-check
+
       - name: Formatage
         run: make rust-fmt
 

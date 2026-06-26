@@ -42,7 +42,7 @@ rust-build:
 	RUSTFLAGS="-Ccode-model=kernel -Ccodegen-units=1" cargo build --verbose
 
 ## rust-build-heavy-testing: Compile le binaire avec les features heavy-testing
-rust-build-heavy-testing: 
+rust-build-heavy-testing:
 	@echo "${HELP_COLOR}==> Compilation en cours...${RESET}"
 	cargo build --profile=heavy-testing --features=heavy-testing
 
@@ -55,9 +55,19 @@ rust-heavy-test: rust-build-heavy-testing
 	@$(MAKE) stop-api
 
 ## rust-build-release: Compile le binaire en mode release
-rust-build-release: 
+rust-build-release:
 	@echo "${HELP_COLOR}==> Compilation en mode release...${RESET}"
 	cargo build --release --verbose
+
+## rust-strip: Optimise la taille du binaire en supprimant les symboles de debug
+rust-strip: rust-build
+	@echo "${HELP_COLOR}==> Strip du binaire...${RESET}"
+	strip ./target/debug/simeis-server
+
+## rust-clean: Supprime les fichiers de build
+rust-clean:
+	@echo "${HELP_COLOR}==> Nettoyage de l'environnement de build...${RESET}"
+	cargo clean
 
 # rust-test: Compile et lance les tests
 rust-test:
@@ -80,7 +90,7 @@ rust-fmt:
 	cargo fmt --all -- --check
 
 # audit: Vérifie les vulnérabilités dans les dépendances
-rust-audit: 
+rust-audit:
 	@echo "${HELP_COLOR}==> Audit du code...${RESET}"
 	cargo audit
 
@@ -91,7 +101,7 @@ rust-udeps:
 
 
 ## rust-start: Compile et lance l'application
-rust-start: 
+rust-start:
 	@echo "${HELP_COLOR}==> Lancement de l'application...${RESET}"
 	cargo run
 
@@ -141,7 +151,7 @@ python-property-test-heavy:
 	${VENV}/python tests/propertybased.py --time 120
 
 # python-functional-test: Lance les tests fonctionnels
-python-functional-test: 
+python-functional-test:
 	@echo "${HELP_COLOR}==> Démarrage en tâche de fond de l'API Rust...${RESET}"
 	@$(BINARY_PATH) & echo $$! > $(PID_FILE)
 	@echo "${HELP_COLOR}==> Attente que l'API réponde sur le port $(PORT)...${RESET}"
@@ -168,9 +178,9 @@ fmt: rust-fmt python-fmt
 rust-test-init:
 	@which cargo-tarpaulin > /dev/null 2>&1 || cargo install --locked cargo-tarpaulin
 
-test-coverage: 
+test-coverage:
 	cargo tarpaulin
 
 ## test-coverage-ci: Lance les tests pour la ci
-test-coverage-ci: 
-	cargo tarpaulin --fail-under ${MIN_COVERAGE} --out json 
+test-coverage-ci:
+	cargo tarpaulin --fail-under ${MIN_COVERAGE} --out json

@@ -1,0 +1,9 @@
+# Propriétaires par défaut pour tout ce qui n'est pas couvert ci-dessous
+* @BLucas49 @evanferron @NockIA
+
+simeis-data/ @BLucas49 @evanferron @NockIA
+simeis-server/ @BLucas49 @evanferron @NockIA
+.github/ @BLucas49 @evanferron @NockIA
+tests/ @BLucas49 @evanferron @NockIA
+doc/ @BLucas49 @evanferron @NockIA
+sdk/ @BLucas49 @evanferron @NockIA
