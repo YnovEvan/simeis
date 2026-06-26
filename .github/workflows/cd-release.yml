@@ -125,6 +125,26 @@ jobs:
       - name: Compiler en mode release
         run: make rust-build-release
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/Dockerfile
+          load: true
+          tags: simeis-server:${{ steps.version.outputs.version }}
+
+      - name: Sauvegarder l'image Docker
+        run: docker image save -o simeis_eva_2_${{ steps.version.outputs.version }}.tar simeis-server:${{ steps.version.outputs.version }}
+
+      - name: Upload image Docker comme artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: simeis_eva_2_${{ steps.version.outputs.version }}.tar
+
       - name: Compiler la documentation PDF
         run: make rust-docu
 
@@ -132,7 +152,7 @@ jobs:
         run: |
 
           # Pour créer le fichier qui est ignoré par git car vide
-          mkdir -p ./debian/usr/bin/ 
+          mkdir -p ./debian/usr/bin/
 
           # Ajout du binaire au package
           cp ./target/release/simeis-server ./debian/usr/bin/
@@ -165,6 +185,7 @@ jobs:
             ./doc/swagger.json
             ./doc/swagger-ui.html
             ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb
+            ./simeis_eva_2_${{ steps.version.outputs.version }}.tar
 
       - name: Setup SSH
         run: |
@@ -181,7 +202,7 @@ jobs:
           scp -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student || true
 
           # Mise à jour du service
-          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb' 
+          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb'
           ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S systemctl restart simeis.service'
 
           sleep 5
@@ -189,7 +210,7 @@ jobs:
           # Vérification de version
           V=$(ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | curl -s http://0.0.0.0:8081/version')
           if echo "$V" | grep -q "$VERSION"
-          then 
+          then
             echo "ok"
           else
             echo "$V n'est pas la bonne version"
