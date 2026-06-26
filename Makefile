@@ -107,7 +107,7 @@ rust-start:
 
 ## rust-docu: Création de la documentation (en cas d'erreur : make init)
 rust-docu:
-	@echo "${HELP_COLOR}==> Generation de la documentation...${RESET}"
+	@echo "${HELP_COLOR}==>  Generation de la documentation...${RESET}"
 	typst compile ./doc/manual.typ ./doc/manuel.pdf
 
 ## rust-check: Vérifier que le code rust compile bien
