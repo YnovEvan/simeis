@@ -149,6 +149,7 @@ jobs:
         run: |
           docker run -d --name simeis-test -p 8081:8081 simeis-server:${{ steps.version.outputs.version }}
           sleep 3
+          docker logs simeis-test
           curl -f http://localhost:8081/ping
           docker stop simeis-test
           docker rm simeis-test
