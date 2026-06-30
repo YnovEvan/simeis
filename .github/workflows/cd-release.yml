@@ -145,6 +145,26 @@ jobs:
           name: docker-image
           path: simeis_eva_2_${{ steps.version.outputs.version }}.tar
 
+      - name: Test du container
+        run: |
+          docker run -d --name simeis-test -p 8081:8081 simeis-server:${{ steps.version.outputs.version }}
+          sleep 3
+          curl -f http://localhost:8081/ping
+          docker stop simeis-test
+          docker rm simeis-test
+
+      - name: Login DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push sur DockerHub
+        run: |
+          docker tag simeis-server:${{ steps.version.outputs.version }} \
+            ${{ vars.DOCKERHUB_USERNAME }}/simeis-server:${{ steps.version.outputs.version }}
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/simeis-server:${{ steps.version.outputs.version }}
+
       - name: Compiler la documentation PDF
         run: make rust-docu
 
