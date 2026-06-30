@@ -1,0 +1,70 @@
+# Workflow qui repère tous les TODO dans les fichiers Rust & Python
+# Le workflow fail si:
+# - aucune issue n'est liée à un TODO
+# - l'issue liée n'existe pas
+# - l'issue est close
+
+name: CI - TODO to Issue
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate TODOs have linked open issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          FAILED=false
+
+          TODO_MATCHES=$(grep -rn "\bTODO\b" \
+            --include="*.rs" --include="*.py" \
+            . | grep -v "\.git" || true)
+
+          if [ -z "$TODO_MATCHES" ]; then
+            echo "No TODOs found"
+            exit 0
+          fi
+
+          while IFS= read -r match; do
+            FILE=$(echo "$match" | cut -d: -f1)
+            LINE=$(echo "$match" | cut -d: -f2)
+            CONTENT=$(echo "$match" | cut -d: -f3-)
+
+            if echo "$CONTENT" | grep -qE "\(#[0-9]+\)"; then
+              ISSUE_NUMBER=$(echo "$CONTENT" | grep -oE "\(#[0-9]+\)" | grep -oE "[0-9]+")
+            else
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — TODO sans issue liée : $CONTENT"
+              FAILED=true
+              continue
+            fi
+
+            RESPONSE=$(curl -s \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER")
+
+            STATE=$(echo "$RESPONSE" | jq -r '.state // empty')
+
+            if [ -z "$STATE" ]; then
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — L'issue #$ISSUE_NUMBER n'existe pas"
+              FAILED=true
+            elif [ "$STATE" = "closed" ]; then
+              echo "::error file=$FILE,line=$LINE::$FILE:$LINE — L'issue #$ISSUE_NUMBER est fermée"
+              FAILED=true
+            else
+              echo "OK $FILE:$LINE — Issue #$ISSUE_NUMBER est ouverte"
+            fi
+          done <<< "$TODO_MATCHES"
+
+          if [ "$FAILED" = "true" ]; then
+            exit 1
+          fi
+          echo "All TODOs have opened issues"

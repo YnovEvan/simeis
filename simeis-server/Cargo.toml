@@ -1,11 +1,10 @@
 [package]
 name = "simeis-server"
-version = "0.1.3"
+version = "0.0.7"
 edition = "2021"
 
 [dependencies]
 simeis-data = { path = "../simeis-data" }
-urlencoding = "2.1.3"
 ntex = { version = "3.7.0", features = ["compress"], default-features = false }
 compio = { version = "*", optional = true }
 tokio = { version = "*", features = ["rt-multi-thread"], optional = true }
@@ -23,6 +22,7 @@ mea = { workspace = true }
 default = ["compio"]
 testing = ["simeis-data/testing"]
 extraspeed = ["simeis-data/extraspeed"]
+heavy-testing = []
 
 # Async runtimes
 compio = [ "ntex/compio", "dep:compio" ]

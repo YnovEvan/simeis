@@ -1,0 +1,239 @@
+name: CD Release
+
+on:
+  pull_request:
+    branches:
+      - "release/*"
+    types:
+      - closed # Se déclenche à la fermeture de la PR
+
+jobs:
+  setup-rust:
+    name: Setup RUST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
+        name: Installation de rust
+        run: |
+          make rust-init
+
+  release:
+    needs: setup-rust
+    # On ne fait rien si la PR a été fermée sans être mergée
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Nécessaire pour créer/modifier une release GitHub
+      pull-requests: read # Nécessaire pour lister les PRs via gh
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Historique complet requis pour gh pr list
+
+      - name: Cache rust install
+        id: cache-rust
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-init
+        with:
+          path: |
+            ./target/
+            ~/.cargo
+          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ env.cache-name }}-
+            ${{ runner.os }}-rust-
+            ${{ runner.os }}-
+
+      - name: Extraire la version depuis le nom de la branche
+        id: version
+        run: |
+          BRANCH="${{ github.base_ref }}"
+          VERSION="${BRANCH#release/}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Mise à jour de la version
+        run: cargo set-version ${{ steps.version.outputs.version }} ## Mets à jour dans simeis server & simeis client
+
+      # Liste toutes les PR mergées dans cette branche release et les classe
+      # par catégorie selon leur branche source (feature/*, bug/*, autre)
+      - name: Générer le changelog
+        id: changelog
+        run: |
+          PRS=$(gh pr list \
+            --base "${{ github.base_ref }}" \
+            --state merged \
+            --json title,url,headRefName \
+            --jq '.[]')
+
+          FEATURES=""
+          BUGFIX=""
+          AUTRE=""
+
+          while IFS= read -r pr; do
+            TITLE=$(echo "$pr" | jq -r '.title')
+            URL=$(echo "$pr" | jq -r '.url')
+            HEAD=$(echo "$pr" | jq -r '.headRefName')
+            LINE="- [$TITLE]($URL)"
+
+            if [[ "$HEAD" == feature/* ]]; then
+              FEATURES="$FEATURES\n$LINE"
+            elif [[ "$HEAD" == bug/* ]]; then
+              BUGFIX="$BUGFIX\n$LINE"
+            else
+              AUTRE="$AUTRE\n$LINE"
+            fi
+          done <<< "$PRS"
+
+          BODY="## Changelog\n"
+          [ -n "$FEATURES" ] && BODY="$BODY\n### Features\n$FEATURES"
+          [ -n "$BUGFIX"   ] && BODY="$BODY\n### Bugfix\n$BUGFIX"
+          [ -n "$AUTRE"    ] && BODY="$BODY\n### Autre\n$AUTRE"
+
+          # On passe par GITHUB_ENV avec délimiteur EOF pour préserver les sauts de ligne
+          {
+            echo 'CHANGELOG<<EOF'
+            echo -e "$BODY"
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+
+      - name: Compiler en mode release
+        run: make rust-build-release
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/Dockerfile
+          load: true
+          tags: simeis-server:${{ steps.version.outputs.version }}
+
+      - name: Sauvegarder l'image Docker
+        run: docker image save -o simeis_eva_2_${{ steps.version.outputs.version }}.tar simeis-server:${{ steps.version.outputs.version }}
+
+      - name: Upload image Docker comme artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: simeis_eva_2_${{ steps.version.outputs.version }}.tar
+
+      - name: Test du container
+        run: |
+          docker run -d --name simeis-test -p 8081:8081 simeis-server:${{ steps.version.outputs.version }}
+          sleep 3
+          docker logs simeis-test
+          curl -f http://localhost:8081/ping
+          docker stop simeis-test
+          docker rm simeis-test
+
+      - name: Login DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push sur DockerHub
+        run: |
+          docker tag simeis-server:${{ steps.version.outputs.version }} \
+            ${{ vars.DOCKERHUB_USERNAME }}/simeis-server:${{ steps.version.outputs.version }}
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/simeis-server:${{ steps.version.outputs.version }}
+
+      - name: Compiler la documentation PDF
+        run: make rust-docu
+
+      - name: Création du package debian
+        run: |
+
+          # Pour créer le fichier qui est ignoré par git car vide
+          mkdir -p ./debian/usr/bin/
+
+          # Ajout du binaire au package
+          cp ./target/release/simeis-server ./debian/usr/bin/
+
+          # Mise à jour de la version dans le control
+          sed -i "s/VERSION/${{steps.version.outputs.version}}/g" ./debian/DEBIAN/control
+          chmod 755 ./debian/DEBIAN/postinst
+
+          # Mise à jour du man
+          date=$(date '+%Y-%m-%d')
+          sed -i "s/VERSION/${{steps.version.outputs.version}}/g" ./debian/usr/man/man1/simeis.1
+          sed -i "s/DATE/$date/g" ./debian/usr/man/man1/simeis.1
+
+      - name: Compilation en .deb
+        run: dpkg-deb --build ./debian .
+
+      # Crée la release si elle n'existe pas, la met à jour si elle existe déjà.
+      # clear_attachments: true remplace les artefacts existants à chaque run, pour éviter les doublons.
+      - name: Créer ou mettre à jour la release GitHub
+        id: create_release
+        uses: mini-bomba/create-github-release@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: ${{ env.CHANGELOG }}
+          clear_attachments: true
+          files: |
+            ./doc/manuel.pdf
+            ./doc/swagger.json
+            ./doc/swagger-ui.html
+            ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb
+            ./simeis_eva_2_${{ steps.version.outputs.version }}.tar
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          cat << EOF > ~/.ssh/id_ed25519
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Déploiement
+        run: |
+
+          # Envoi du fichier au serveur
+          scp -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student || true
+
+          # Mise à jour du service
+          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb'
+          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S systemctl restart simeis.service'
+
+          sleep 5
+
+          # Vérification de version
+          V=$(ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | curl -s http://0.0.0.0:8081/version')
+          if echo "$V" | grep -q "$VERSION"
+          then
+            echo "ok"
+          else
+            echo "$V n'est pas la bonne version"
+            exit 1
+          fi
