@@ -40,6 +40,9 @@ jobs:
     if: needs.find-propagate.outputs.releases != '[]' # Si aucune propagation est nécessaire on ignore
     needs: find-propagate
     runs-on: ubuntu-latest
+    permissions: # Nécessaire pour la création de PR
+      pull-requests: write
+      contents: read
     strategy: # Lance pour chaque propagate trouvé la pr qui correpond
       fail-fast: false
       matrix:
