@@ -1,4 +1,4 @@
-# Workflow qui lorsqu'une PR est merge depuis une branche bug/* repère les labels propagate:release/x et créé des labels vers ces branches
+# Workflow qui lorsqu'une PR est merge depuis une branche bug/* repère les labels propagate:release/x et créé des PR pour mettre à jour les releases
 
 name: Ci Propagate
 
