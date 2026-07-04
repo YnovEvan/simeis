@@ -43,7 +43,7 @@ jobs:
     permissions: # Nécessaire pour la création de PR
       pull-requests: write
       contents: read
-    strategy: # Lance pour chaque propagate trouvé la pr qui correpond
+    strategy: # Lance pour chaque label propagate:release/x trouvé la création de la pr qui correpond
       fail-fast: false
       matrix:
         release: ${{ fromJson(needs.find-propagate.outputs.releases) }}
