@@ -1,16 +1,18 @@
 """Simeis SDK for Python - Client library for Simeis game server."""
-import os
-import sys
-import math
-import time
+
 import json
+import math
+import os
 import string
-import urllib.request
+import sys
+import time
 import urllib.parse
+import urllib.request
 
 
 class SimeisError(Exception):
     """Custom exception for Simeis API errors."""
+
     pass
 
 
@@ -41,9 +43,7 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
         tail = ""
         if len(qry) > 0:
             tail += "?"
-            tail += "&".join(
-                [f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()]
-            )
+            tail += "&".join([f"{k}={urllib.parse.quote(v)}" for k, v in qry.items()])
 
         qry_url = f"{self.url}{path}{tail}"
 
@@ -110,7 +110,7 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
     def shop_list_modules(self, sta):
         """List available modules at a station."""
         all_modules = self.get(f"/station/{sta}/shop/modules")
-        return sorted(all_modules, key=lambda mod: mod["price"])
+        return all_modules
 
     def shop_list_ship(self, sta):
         """List available ships at a station."""
@@ -133,6 +133,12 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
         """Assign crew member to a ship role."""
         return self.post(
             f"/station/{sta}/crew/assign/{operator_id}/ship/{shipid}/{role}"
+        )
+
+    def assign_crew_to_module(self, sta, crew_id, ship_id, mod_id):
+        """Assign crew member to a module."""
+        return self.post(
+            f"/station/{sta}/crew/assign/{crew_id}/ship/{ship_id}/{mod_id}"
         )
 
     def station_has_trader(self, sta):
@@ -244,10 +250,12 @@ class SimeisSDK:  # pylint: disable=too-many-public-methods
 
     def return_station_and_unload_all(self, sta, ship_id):
         """Return ship to station and unload all cargo."""
+        self.wait_until_ship_idle(ship_id)
         ship = self.get(f"/ship/{ship_id}")
         station = self.get(f"/station/{sta}")
         if ship["position"] != station["position"]:
             self.travel(ship["id"], station["position"])
+
         return self.post(f"/ship/{ship_id}/unload/{sta}/all")
 
     def get_station_resources(self, sta):

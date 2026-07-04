@@ -1,24 +1,15 @@
-name: Ci Release
+name: CI - Quality
+
+env:
+  CARGO_TERM_COLOR: always
 
 on:
   pull_request:
     branches:
-      - "release/*"
+      - "*"
 
 jobs:
-  origin: # Origin fait échouer la pr afin de montrer au dev qu'il s'est trompé d'origine
-    name: Vérification de l'origine de la release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Échoue si l'origine de PR n'est pas valide
-        run: |
-          SOURCE_REF="${{ github.head_ref }}"
-          if [[ "$SOURCE_REF" != "main" && ! "$SOURCE_REF" =~ ^bug/ ]]; then
-            exit 1
-          fi
-
   setup-py:
-    needs: origin
     name: Setup PYTHON
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +35,6 @@ jobs:
         run: make python-init
 
   setup-rust:
-    needs: origin
     name: Setup RUST
     runs-on: ubuntu-latest
     steps:
@@ -72,10 +62,10 @@ jobs:
           make rust-init
           make rust-build
 
-  quality:
-    name: Quality
-    needs: setup-rust
+  rust-quality:
+    name: Rust quality
     runs-on: ubuntu-latest
+    needs: setup-rust
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
@@ -95,58 +85,26 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
-      - name: Cache python install
-        id: cache-python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
+      - name: Check
+        run: make rust-check
 
       - name: Formatage
-        run: make fmt
+        run: make rust-fmt
 
       - name: Linting
-        run: make lint
+        run: make rust-lint
 
-      - name: Audit
-        run: make rust-audit
-
-      - name: Udeps
-        run: make rust-udeps
-
-  tests:
-    name: Tests
-    needs: setup-rust
+  python-quality:
+    name: Python quality
     runs-on: ubuntu-latest
+    needs: setup-py
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
-
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
 
       - name: Cache python install
         id: cache-python
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         env:
           cache-name: cache-init
         with:
@@ -158,36 +116,24 @@ jobs:
             ${{ runner.os }}-python-
             ${{ runner.os }}-
 
-      - name: Lancement des tests
-        run: make rust-test-release
+      - name: Formatage python
+        run: make python-fmt
 
-      - name: Lancement des tests avec heavy-testing
-        run: make rust-heavy-test
+      - name: Linting python
+        run: make python-lint
 
-  python-property-test-heavy:
-    name: Tests property-based (lourd)
-    needs: [setup-rust, setup-py]
+  python-property-test:
+    name: Tests property-based
     runs-on: ubuntu-latest
+    needs: setup-py
+    concurrency:
+      group: property-test-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
-
-      - name: Cache python
+      - name: Cache python install
         id: cache-python
         uses: actions/cache/restore@v4
         env:
@@ -201,12 +147,12 @@ jobs:
             ${{ runner.os }}-python-
             ${{ runner.os }}-
 
-      - name: Tests property-based (mode lourd)
-        run: make python-property-test-heavy
+      - name: Tests property-based
+        run: make python-property-test
 
   python-functional-test:
     name: Tests functionnal
-    needs: [setup-rust, setup-py]
+    needs: [setup-rust, python-property-test]
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
@@ -227,7 +173,7 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
-      - name: Cache python
+      - name: Cache python install
         id: cache-python
         uses: actions/cache/restore@v4
         env:
@@ -244,10 +190,15 @@ jobs:
       - name: Tests functionnal
         run: make python-functional-test
 
-  build:
-    name: Build
-    needs: [quality, tests, python-property-test-heavy, python-functional-test]
+  tests-coverage:
+    name: Vérification couverture de tests
     runs-on: ubuntu-latest
+    needs: setup-rust
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Récupération du code
         uses: actions/checkout@v6
@@ -267,11 +218,16 @@ jobs:
             ${{ runner.os }}-rust-
             ${{ runner.os }}-
 
-      - name: Compilation
-        run: make rust-build-release
-
-      - name: Optimisation executable
+      - name: Vérification du coverage
         run: |
-          ls -lah ./target/release/
-          strip ./target/release/simeis-server
-          ls -lah ./target/release/
+          # Lancement du coverage (échoue si inférieur à MIN_COVERAGE & sortie json)
+          make test-coverage-ci
+
+          # Récupération du chiffre de coverage
+          COVERAGE=$(jq '.coverage' tarpaulin-report.json)
+
+          # Si le coverage n'a pas échoué mais qu'il est inférieur à 50% attribution du label "not enough tests"
+          if [ $(echo "$COVERAGE < 50.0" | bc) -eq 1 ] 
+          then 
+            gh pr edit ${{ github.event.number }} --add-label "not enough tests"
+          fi

@@ -1,4 +1,5 @@
 """Watch game module for real-time game monitoring and player tracking."""
+
 import urllib.request
 import time
 import json
@@ -20,6 +21,7 @@ HIST = {}
 
 class SimeisError(Exception):
     """Custom exception for Simeis API errors."""
+
     pass
 
 
