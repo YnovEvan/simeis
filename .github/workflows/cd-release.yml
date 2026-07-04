@@ -220,16 +220,16 @@ jobs:
         run: |
 
           # Envoi du fichier au serveur
-          scp -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -P 22222 ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb eva2@78.123.114.124:/home/student || true
+          scp -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -P ${{ secrets.SSH_PORT }} ./simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb ${{ secrets.SSH_USER }}@78.123.114.124:/home/student || true
 
           # Mise à jour du service
-          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb'
-          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S systemctl restart simeis.service'
+          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S dpkg -i simeiseva_${{ steps.version.outputs.version }}-1_amd64.deb' 
+          ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | sudo -S systemctl restart simeis.service'
 
           sleep 5
 
           # Vérification de version
-          V=$(ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p 22222 eva2@78.123.114.124 -- 'echo ${{ secrets.SUDO_PWD }} | curl -s http://0.0.0.0:8081/version')
+          V=$(ssh -i ~/.ssh/id_ed25519 -o 'StrictHostKeyChecking no' -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@78.123.114.124 -- curl -s http://0.0.0.0:8081/version)
           if echo "$V" | grep -q "$VERSION"
           then
             echo "ok"
