@@ -20,7 +20,7 @@ runs:
       with:
         path: |
           ./test_env/
-        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-${{ inputs.python-init-cache-version }}-${{ hashFiles('Cargo.lock') }}
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-${{ inputs.python-init-cache-version }}-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-${{ inputs.python-init-cache-version }}-
           ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-
