@@ -17,6 +17,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
   release:
     needs: setup-rust
@@ -39,6 +43,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Extraire la version depuis le nom de la branche
         id: version

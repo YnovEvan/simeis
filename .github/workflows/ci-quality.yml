@@ -18,6 +18,9 @@ jobs:
 
       - name: Python cache
         uses: ./.github/actions/python-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
   setup-rust:
     name: Setup RUST
@@ -28,6 +31,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
   rust-quality:
     name: Rust quality
@@ -39,6 +46,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Check
         run: make rust-check
@@ -59,6 +70,9 @@ jobs:
 
       - name: Python cache
         uses: ./.github/actions/python-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Formatage python
         run: make python-fmt
@@ -79,6 +93,9 @@ jobs:
 
       - name: Python cache
         uses: ./.github/actions/python-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Tests property-based
         run: make python-property-test
@@ -93,9 +110,16 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Python cache
         uses: ./.github/actions/python-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Tests functionnal
         run: make python-functional-test
@@ -115,6 +139,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Vérification du coverage
         run: |

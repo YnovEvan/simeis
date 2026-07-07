@@ -1,6 +1,17 @@
 name: "Rust Cache"
 description: "Mise en cache de l'initialisation & du build rust"
 
+inputs:
+  main-cache-version:
+    description: "Version globale du cache"
+    required: true
+  rust-init-cache-version:
+    description: "Version du cache d'init rust"
+    required: true
+  rust-build-cache-version:
+    description: "Version du cache de build rust"
+    required: true
+
 runs:
   using: "composite" # Permet d'indiquer à github que cette action est une suite de step à executer dans le container
   steps:
@@ -12,12 +23,12 @@ runs:
           ~/.cargo/registry/
           ~/.cargo/git/db/
           ~/.cargo/bin
-        key: ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-${{ vars.RUST_INIT_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-${{ inputs.rust-init-cache-version }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-${{ vars.RUST_INIT_CACHE_VERSION }}-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-${{ inputs.rust-init-cache-version }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-
           ${{ runner.os }}-
 
     - if: ${{ steps.cache-rust-install.outputs.cache-hit != 'true' }}
@@ -34,13 +45,13 @@ runs:
           ~/.cargo/registry/
           ~/.cargo/git/db/
           ./target/
-        key: ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('simeis-server/**/*.rs') }}
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('simeis-server/**/*.rs') }}
         restore-keys: |
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-
-          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-${{ hashFiles('Cargo.lock') }}
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-
           ${{ runner.os }}-
 
     - if: ${{ steps.cache-rust-build.outputs.cache-hit != 'true' }}

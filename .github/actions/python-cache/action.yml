@@ -1,6 +1,14 @@
 name: "Python Cache"
 description: "Mise en cache de l'initialisation python"
 
+inputs:
+  main-cache-version:
+    description: "Version globale du cache"
+    required: true
+  python-init-cache-version:
+    description: "Version du cache d'init python"
+    required: true
+
 runs:
   using: "composite" # Permet d'indiquer à github que cette action est une suite de step à executer dans le container
   steps:
@@ -12,10 +20,12 @@ runs:
       with:
         path: |
           ./test_env/
-        key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-${{ inputs.python-init-cache-version }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-python-${{ env.cache-name }}-
-          ${{ runner.os }}-python-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-${{ inputs.python-init-cache-version }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-python-init-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-python-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-
           ${{ runner.os }}-
 
     - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}

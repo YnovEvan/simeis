@@ -18,6 +18,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
   quality:
     needs: setup-rust
@@ -43,6 +47,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Lancement des tests
         run: make rust-test
@@ -57,6 +65,10 @@ jobs:
 
       - name: Rust cache + build
         uses: ./.github/actions/rust-cache
+        with:
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Compilation du projet
         run: make rust-build
