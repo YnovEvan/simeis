@@ -1,0 +1,60 @@
+# Workflow qui lorsqu'une PR est merge depuis une branche bug/* repère les labels propagate:release/x et créé des PR pour mettre à jour les releases
+
+name: Ci Propagate
+
+on:
+  pull_request:
+    types: closed
+
+jobs:
+  is-bug-merged:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Vérification de la branche source
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [[ "$BRANCH_NAME" != bug/* ]]; then
+            exit 1
+          fi
+
+  find-propagate:
+    needs: is-bug-merged
+    runs-on: ubuntu-latest
+    outputs:
+      releases: ${{ steps.extract.outputs.releases }}
+    steps:
+      - name: Extraire les releases depuis les labels
+        id: extract
+        env:
+          LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }} # Récupération des labels lié à la PR
+        run: |
+          releases=$(echo "$LABELS_JSON" | jq -c '
+            [.[] | select(startswith("propagate:release/")) | sub("propagate:"; "")]
+          ')
+          echo "Releases trouvées : $releases"
+          echo "releases=$releases" >> "$GITHUB_OUTPUT"
+
+  propagate:
+    if: needs.find-propagate.outputs.releases != '[]' # Si aucune propagation est nécessaire on ignore
+    needs: find-propagate
+    runs-on: ubuntu-latest
+    permissions: # Nécessaire pour la création de PR
+      pull-requests: write
+      contents: read
+    strategy: # Lance pour chaque label propagate:release/x trouvé la création de la pr qui correpond
+      fail-fast: false
+      matrix:
+        release: ${{ fromJson(needs.find-propagate.outputs.releases) }}
+    steps:
+      - name: Création de la PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --head "${{ github.event.pull_request.head.ref }}" \
+            --base "${{ matrix.release }}" \
+            --title "Propagation du bug fix : ${{ github.event.pull_request.head.ref }}" \
+            --body "Propagation automatique depuis #${{ github.event.pull_request.number }}"

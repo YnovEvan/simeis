@@ -1,0 +1,61 @@
+name: "Rust Cache"
+description: "Mise en cache de l'initialisation & du build rust"
+
+inputs:
+  main-cache-version:
+    description: "Version globale du cache"
+    required: true
+  rust-init-cache-version:
+    description: "Version du cache d'init rust"
+    required: true
+  rust-build-cache-version:
+    description: "Version du cache de build rust"
+    required: true
+
+runs:
+  using: "composite" # Permet d'indiquer à github que cette action est une suite de step à executer dans le container
+  steps:
+    - name: Cache rust install
+      id: cache-rust-install
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/.cargo/registry/
+          ~/.cargo/git/db/
+          ~/.cargo/bin
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-${{ inputs.rust-init-cache-version }}-${{ hashFiles('Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-${{ inputs.rust-init-cache-version }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-init-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-rust-install.outputs.cache-hit != 'true' }}
+      shell: bash
+      name: Installation de rust
+      run: |
+        make rust-init
+
+    - name: Cache rust build
+      id: cache-rust-build
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/.cargo/registry/
+          ~/.cargo/git/db/
+          ./target/
+        key: ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('simeis-server/**/*.rs') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-${{ hashFiles('Cargo.lock') }}
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-${{ inputs.rust-build-cache-version }}-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-build-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-rust-
+          ${{ runner.os }}-${{ inputs.main-cache-version }}-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-rust-build.outputs.cache-hit != 'true' }}
+      shell: bash
+      name: Build de rust
+      run: |
+        make rust-build

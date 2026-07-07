@@ -25,52 +25,26 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache python install
-        id: cache-python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
+      - name: Python cache
+        uses: ./.github/actions/python-cache
         with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
-
-      - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
-        name: Installation de python
-        run: make python-init
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
   setup-rust:
     needs: origin
     name: Setup RUST
     runs-on: ubuntu-latest
     steps:
-      - name: Récupération du code
+      - name: Récupération du code # Nécessaire pour récupérer le action.yml
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
-
-      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
-        name: Installation de rust
-        run: |
-          make rust-init
-          make rust-build
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
   quality:
     name: Quality
@@ -80,34 +54,18 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
-      - name: Cache python install
-        id: cache-python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
+      - name: Python cache
+        uses: ./.github/actions/python-cache
         with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Formatage
         run: make fmt
@@ -129,34 +87,18 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
-      - name: Cache python install
-        id: cache-python
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
+      - name: Python cache
+        uses: ./.github/actions/python-cache
         with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Lancement des tests
         run: make rust-test-release
@@ -172,34 +114,18 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
-      - name: Cache python
-        id: cache-python
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Python cache
+        uses: ./.github/actions/python-cache
         with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Tests property-based (mode lourd)
         run: make python-property-test-heavy
@@ -212,34 +138,18 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
-      - name: Cache python
-        id: cache-python
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Python cache
+        uses: ./.github/actions/python-cache
         with:
-          path: |
-            ./test_env/
-          key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.cache-name }}-
-            ${{ runner.os }}-python-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          python-init-cache-version: ${{ vars.PYTHON_INIT_CACHE_VERSION }}
 
       - name: Tests functionnal
         run: make python-functional-test
@@ -252,20 +162,12 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
         with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+          main-cache-version: ${{ vars.MAIN_CACHE_VERSION }}
+          rust-init-cache-version: ${{ vars.RUST_INIT_CACHE_VERSION }}
+          rust-build-cache-version: ${{ vars.RUST_BUILD_CACHE_VERSION }}
 
       - name: Compilation
         run: make rust-build-release
