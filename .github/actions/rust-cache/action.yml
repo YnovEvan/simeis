@@ -1,0 +1,50 @@
+name: "Rust Cache"
+description: "Mise en cache de l'initialisation & du build rust"
+
+runs:
+  using: "composite" # Permet d'indiquer à github que cette action est une suite de step à executer dans le container
+  steps:
+    - name: Cache rust install
+      id: cache-rust-install
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/.cargo/registry/
+          ~/.cargo/git/db/
+          ~/.cargo/bin
+        key: ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-${{ vars.RUST_INIT_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-${{ vars.RUST_INIT_CACHE_VERSION }}-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-init-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-rust-install.outputs.cache-hit != 'true' }}
+      shell: bash
+      name: Installation de rust
+      run: |
+        make rust-init
+
+    - name: Cache rust build
+      id: cache-rust-build
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/.cargo/registry/
+          ~/.cargo/git/db/
+          ./target/
+        key: ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('simeis-server/**/*.rs') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-${{ hashFiles('Cargo.lock') }}
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-${{ vars.RUST_BUILD_CACHE_VERSION }}-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-build-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-rust-
+          ${{ runner.os }}-${{ vars.MAIN_CACHE_VERSION }}-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-rust-build.outputs.cache-hit != 'true' }}
+      shell: bash
+      name: Build de rust
+      run: |
+        make rust-build

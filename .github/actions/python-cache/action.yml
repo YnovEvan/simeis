@@ -1,0 +1,24 @@
+name: "Python Cache"
+description: "Mise en cache de l'initialisation python"
+
+runs:
+  using: "composite" # Permet d'indiquer à github que cette action est une suite de step à executer dans le container
+  steps:
+    - name: Cache python install
+      id: cache-python
+      uses: actions/cache@v6
+      env:
+        cache-name: cache-init
+      with:
+        path: |
+          ./test_env/
+        key: ${{ runner.os }}-python-${{ env.cache-name }}-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-python-${{ env.cache-name }}-
+          ${{ runner.os }}-python-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-python.outputs.cache-hit != 'true' }}
+      shell: bash
+      name: Installation de python
+      run: make python-init

@@ -13,29 +13,11 @@ jobs:
     name: Setup RUST
     runs-on: ubuntu-latest
     steps:
-      - name: Récupération du code
+      - name: Récupération du code # Nécessaire pour récupérer le action.yml
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
-
-      - if: ${{ steps.cache-rust.outputs.cache-hit != 'true' }}
-        name: Installation de rust
-        run: |
-          make rust-init
-          make rust-build
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
 
   quality:
     needs: setup-rust
@@ -59,20 +41,8 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
 
       - name: Lancement des tests
         run: make rust-test
@@ -85,20 +55,8 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v6
 
-      - name: Cache rust install
-        id: cache-rust
-        uses: actions/cache/restore@v4
-        env:
-          cache-name: cache-init
-        with:
-          path: |
-            ./target/
-            ~/.cargo
-          key: ${{ runner.os }}-rust-${{ env.cache-name }}-${{ hashFiles('Cargo.lock', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-rust-${{ env.cache-name }}-
-            ${{ runner.os }}-rust-
-            ${{ runner.os }}-
+      - name: Rust cache + build
+        uses: ./.github/actions/rust-cache
 
       - name: Compilation du projet
         run: make rust-build
